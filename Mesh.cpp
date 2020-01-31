@@ -22,12 +22,6 @@ namespace rendering {
 		verts[2] = { 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0 };
 		verts[3] = { 1, -1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0 };
 
-		///@TODO Get rid of this
-		for (Vertex vert : verts) {
-			vert.x = vert.x / 4;
-			vert.y = vert.y / 4;
-			vert.z = vert.z / 4;
-		}
 
 		std::vector<GLuint> ind = { 0, 2, 1, 0, 3, 2 };
 

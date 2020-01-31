@@ -43,7 +43,7 @@ int main()
 
 	renderer.AddObject(&renderObject);
 
-	bool renderThings = false;
+	bool renderThings = true;
 
 	std::map<int, bool> buttonStates;
 	buttonStates.insert(std::pair<int, bool>(GLFW_KEY_0, false));

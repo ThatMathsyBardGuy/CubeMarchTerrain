@@ -5,6 +5,12 @@ namespace rendering {
 		BufferData();
 	}
 
+	Mesh::~Mesh() {
+		glDeleteBuffers(1, &m_VBO);
+		glDeleteBuffers(1, &m_IBO);
+		glDeleteVertexArrays(1, &m_VAO);
+	}
+
 	Mesh* Mesh::GenerateQuad() {
 		std::vector<Vertex> verts;
 		verts.resize(4);

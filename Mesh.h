@@ -15,6 +15,9 @@ namespace rendering {
 
 		static Mesh* GenerateQuad();
 
+		GLuint GetVAO() { return m_VAO; }
+		std::vector<GLuint> GetIndices() { return m_Indices; }
+
 		void BufferData();
 	protected:
 		std::vector<rendering::Vertex> m_Vertices;

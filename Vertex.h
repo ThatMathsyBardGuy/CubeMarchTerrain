@@ -4,9 +4,20 @@
 
 namespace rendering {
 	struct Vertex {
-		GLfloat x, y, z;
-		GLfloat u, v;
-		GLfloat r, g, b, a;
-		GLfloat nx, ny, nz;
+		GLfloat x;
+		GLfloat y;
+		GLfloat z;
+		
+		GLfloat u;
+		GLfloat v;
+
+		GLfloat r;
+		GLfloat g;
+		GLfloat b;
+		GLfloat a;
+
+		GLfloat nx;
+		GLfloat ny;
+		GLfloat nz;
 	};
 }

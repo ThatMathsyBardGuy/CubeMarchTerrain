@@ -17,7 +17,7 @@ namespace rendering {
 	Mesh* Mesh::GenerateQuad() {
 		std::vector<Vertex> verts;
 		verts.resize(4);
-		verts[0] = { -1, -1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0 };
+		verts[0] = { 1, -1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0 };
 		verts[1] = { -1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0 };
 		verts[2] = { 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0 };
 		verts[3] = { 1, -1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0 };

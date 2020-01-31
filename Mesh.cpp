@@ -2,6 +2,9 @@
 
 namespace rendering {
 	Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::string name) : m_Vertices(vertices), m_Indices(indices), m_Name(name) {
+		glGenBuffers(1, &m_VBO);
+		glGenBuffers(1, &m_IBO);
+		glGenVertexArrays(1, &m_VAO);
 		BufferData();
 	}
 
@@ -19,6 +22,13 @@ namespace rendering {
 		verts[2] = { 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0 };
 		verts[3] = { 1, -1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0 };
 
+		///@TODO Get rid of this
+		for (Vertex vert : verts) {
+			vert.x = vert.x / 4;
+			vert.y = vert.y / 4;
+			vert.z = vert.z / 4;
+		}
+
 		std::vector<GLuint> ind = { 0, 2, 1, 0, 3, 2 };
 
 		Mesh* m = new Mesh(verts, ind, "Quad");
@@ -27,9 +37,6 @@ namespace rendering {
 	}
 
 	void Mesh::BufferData() {
-		glGenBuffers(1, &m_VBO);
-		glGenBuffers(1, &m_IBO);
-		glGenVertexArrays(1, &m_VAO);
 
 		glBindVertexArray(m_VAO);
 
@@ -42,6 +49,8 @@ namespace rendering {
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(3 * sizeof(GLfloat)));	// u, v
 		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(5 * sizeof(GLfloat)));	// r, g, b, a
 		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(9 * sizeof(GLfloat)));	// nx, ny, nz
+
+		glEnableVertexAttribArray(0);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);

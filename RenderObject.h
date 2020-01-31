@@ -9,6 +9,8 @@ namespace rendering {
 		RenderObject(Mesh* mesh, glm::mat4 transform = glm::mat4(), std::string name = "Unnamed Render Object");
 		~RenderObject();
 
+		void SetDrawMode(GLuint mode) { m_DrawType = mode; }
+
 		void Draw();
 	protected:
 		Mesh* m_Mesh;

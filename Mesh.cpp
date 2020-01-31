@@ -20,10 +20,10 @@ namespace rendering {
 		verts[0] = { 1, -1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0 };
 		verts[1] = { -1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0 };
 		verts[2] = { 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0 };
-		verts[3] = { 1, -1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0 };
+		verts[3] = { -1, -1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0 };
 
 
-		std::vector<GLuint> ind = { 0, 2, 1, 0, 3, 2 };
+		std::vector<GLuint> ind = { 0, 2, 1, 0, 3, 1 };
 
 		Mesh* m = new Mesh(verts, ind, "Quad");
 

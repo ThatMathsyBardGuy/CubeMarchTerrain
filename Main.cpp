@@ -43,8 +43,6 @@ int main()
 
 	renderer.AddObject(&renderObject);
 
-	bool renderThings = true;
-
 	std::map<int, bool> buttonStates;
 	buttonStates.insert(std::pair<int, bool>(GLFW_KEY_0, false));
 	buttonStates.insert(std::pair<int, bool>(GLFW_KEY_ESCAPE, false));
@@ -52,9 +50,8 @@ int main()
 	while (!glfwWindowShouldClose(window))
 	{
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-		if (buttonStates.at(GLFW_KEY_0)) renderThings = !renderThings;
 		if (buttonStates.at(GLFW_KEY_ESCAPE)) glfwSetWindowShouldClose(window, true);
-		if (renderThings) renderer.RenderObjects();
+		renderer.RenderObjects();
 		glfwPollEvents();
 		ProcessInput(window, buttonStates);
 	}

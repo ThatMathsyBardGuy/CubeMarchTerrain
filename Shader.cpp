@@ -10,24 +10,20 @@ namespace rendering {
 		"#version 330 core\n"
 		"layout (location = 0) in vec3 aPos;\n"
 		"layout (location = 2) in vec4 colour;\n"
-		"out Vertex {\n"
-		"    vec4 colour;\n"
-		"} OUT;\n"
+		"out vec4 vertexcolour;\n"
 		"void main()\n"
 		"{\n"
 		"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-		"   OUT.colour = colour;\n"
+		"   vertexcolour = vec4(colour.r, colour.g, colour.b, colour.a);\n"
 		"}\0";
 
 	const char* DEBUG_FRAG_SHADER_SRC = ""
 		"#version 330 core\n"
-		"in Vertex {\n"
-		"    vec4 colour;\n"
-		"} IN;\n"
+		"in vec4 vertexcolour;\n"
 		"out vec4 fragColor;\n"
 		"void main()\n"
 		"{\n"
-		"    fragColor = IN.colour;\n"
+		"    fragColor = vertexcolour;\n"
 		"}\0";
 
 	Shader::Shader() : Shader(DEBUG_VERT_SHADER_SRC, DEBUG_FRAG_SHADER_SRC) {

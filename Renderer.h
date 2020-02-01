@@ -17,7 +17,7 @@ namespace rendering {
 		Renderer(GLFWwindow& parent);
 		~Renderer();
 
-		Camera* GetCamera() { return &m_Camera; }
+		Camera* GetCamera() { return m_Camera; }
 		
 		void SetCurrentShader(Shader* shader) { m_CurrentShader = shader; }
 
@@ -26,7 +26,7 @@ namespace rendering {
 		void RenderObjects();
 
 	protected:
-		Camera m_Camera;
+		Camera* m_Camera;
 		
 		std::vector<RenderObject*> m_Objects;
 

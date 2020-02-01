@@ -6,8 +6,8 @@ namespace rendering {
 
 	Renderer::Renderer(GLFWwindow& parent) : m_Parent(&parent) {
 		m_CurrentShader = new Shader();
-		m_Camera = Camera();
-		m_ViewMatrix = m_Camera.BuildViewMatrix();
+		m_Camera = new Camera();
+		m_ViewMatrix = m_Camera->BuildViewMatrix();
 
 		m_ProjectionMatrix = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 	
@@ -23,7 +23,7 @@ namespace rendering {
 	}
 
 	void Renderer::RenderObjects() {
-		m_ViewMatrix = m_Camera.BuildViewMatrix();
+		m_ViewMatrix = m_Camera->BuildViewMatrix();
 		
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		glUseProgram(m_CurrentShader->GetProgram());

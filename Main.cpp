@@ -43,7 +43,14 @@ int main()
 	rendering::Mesh* quad = rendering::Mesh::GenerateQuad();
 	rendering::RenderObject renderObject(quad);
 
+	glm::mat4 transform = glm::mat4(1.0f);
+	transform = glm::translate(transform, glm::vec3(1, 1, 2));
+	transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(0, 0, 1));
+	
+	rendering::RenderObject renderObject2(quad, transform);
+
 	renderer.AddObject(&renderObject);
+	renderer.AddObject(&renderObject2);
 
 	std::map<int, bool> buttonStates;
 	buttonStates.insert(std::pair<int, bool>(GLFW_KEY_0, false));

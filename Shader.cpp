@@ -10,10 +10,14 @@ namespace rendering {
 		"#version 330 core\n"
 		"layout (location = 0) in vec3 aPos;\n"
 		"layout (location = 2) in vec4 colour;\n"
+		"uniform mat4 viewMatrix;\n"
+		"uniform mat4 modelMatrix;\n"
+		"uniform mat4 projectionMatrix;\n"
 		"out vec4 vertexcolour;\n"
 		"void main()\n"
 		"{\n"
-		"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+		"   mat4 mvp = projectionMatrix * viewMatrix * modelMatrix;\n"
+		"   gl_Position = mvp*vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 		"   vertexcolour = vec4(colour.r, colour.g, colour.b, colour.a);\n"
 		"}\0";
 

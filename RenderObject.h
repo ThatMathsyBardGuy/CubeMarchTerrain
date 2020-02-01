@@ -6,10 +6,12 @@ namespace rendering {
 	class RenderObject
 	{
 	public:
-		RenderObject(Mesh* mesh, glm::mat4 transform = glm::mat4(), std::string name = "Unnamed Render Object");
+		RenderObject(Mesh* mesh, glm::mat4 transform = glm::mat4(1.0f), std::string name = "Unnamed Render Object");
 		~RenderObject();
 
 		void SetDrawMode(GLuint mode) { m_DrawType = mode; }
+
+		glm::mat4 GetTransform() { return m_Transform; }
 
 		void Draw();
 	protected:

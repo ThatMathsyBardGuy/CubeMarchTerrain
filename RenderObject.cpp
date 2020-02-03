@@ -2,7 +2,7 @@
 
 namespace rendering {
 	RenderObject::RenderObject(Mesh* mesh, glm::mat4 transform, std::string name) : m_Mesh(mesh), m_Transform(transform), m_Name(name), m_DrawType(GL_TRIANGLES) {
-		
+		m_CameraDistance = 0.0f;
 	}
 
 	RenderObject::~RenderObject() {
@@ -17,4 +17,5 @@ namespace rendering {
 
 		glBindVertexArray(0);
 	}
+
 }

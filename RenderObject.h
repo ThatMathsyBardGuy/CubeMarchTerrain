@@ -13,12 +13,23 @@ namespace rendering {
 
 		glm::mat4 GetTransform() { return m_Transform; }
 
+		void SetCameraDistance(float dist) { m_CameraDistance = dist; }
+		float GetCameraDistance() { return m_CameraDistance; }
+
 		void Draw();
+
+		static bool CompareByDepth(RenderObject* a, RenderObject* b) { return a->GetCameraDistance() < b->GetCameraDistance(); }
+	
 	protected:
 		Mesh* m_Mesh;
 		glm::mat4 m_Transform;
 		GLuint m_DrawType;
 
+		float m_CameraDistance;
+
 		std::string m_Name;
+
+		
 	};
+	
 }

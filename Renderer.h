@@ -26,6 +26,8 @@ namespace rendering {
 		void RenderObjects();
 
 	protected:
+		void SortObjectsByDepth();
+
 		Camera* m_Camera;
 		
 		std::vector<RenderObject*> m_Objects;

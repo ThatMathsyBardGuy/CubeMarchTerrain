@@ -5,8 +5,8 @@
 
 namespace rendering {
 
-	Renderer::Renderer(GLFWwindow& parent) : m_Parent(&parent) {
-		m_CurrentShader = new Shader();
+	Renderer::Renderer(GLFWwindow& parent, Shader* shader) : m_Parent(&parent) {
+		m_Shader = shader;
 		m_Camera = new Camera();
 		m_ViewMatrix = m_Camera->BuildViewMatrix();
 
@@ -17,7 +17,7 @@ namespace rendering {
 	}
 
 	Renderer::~Renderer() {
-		delete m_CurrentShader;
+		delete m_Shader;
 		m_Objects.clear();
 	}
 
@@ -45,12 +45,12 @@ namespace rendering {
 		m_ViewMatrix = m_Camera->BuildViewMatrix();
 		
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-		glUseProgram(m_CurrentShader->GetProgram());
-		glUniformMatrix4fv(glGetUniformLocation(m_CurrentShader->GetProgram(), "viewMatrix"), 1, GL_FALSE, (float*)&m_ViewMatrix);
-		glUniformMatrix4fv(glGetUniformLocation(m_CurrentShader->GetProgram(), "projectionMatrix"), 1, GL_FALSE, (float*)&m_ProjectionMatrix);
+		glUseProgram(m_Shader->GetProgram());
+		glUniformMatrix4fv(glGetUniformLocation(m_Shader->GetProgram(), "viewMatrix"), 1, GL_FALSE, (float*)&m_ViewMatrix);
+		glUniformMatrix4fv(glGetUniformLocation(m_Shader->GetProgram(), "projectionMatrix"), 1, GL_FALSE, (float*)&m_ProjectionMatrix);
 		for (RenderObject* object : m_Objects) {
 			glm::mat4 transform = object->GetTransform();
-			glUniformMatrix4fv(glGetUniformLocation(m_CurrentShader->GetProgram(), "modelMatrix"), 1, GL_FALSE, (float*)&transform);
+			glUniformMatrix4fv(glGetUniformLocation(m_Shader->GetProgram(), "modelMatrix"), 1, GL_FALSE, (float*)&transform);
 			object->Draw();
 		}
 		glfwSwapBuffers(m_Parent);

@@ -14,12 +14,12 @@ namespace rendering {
 	class Renderer
 	{
 	public:
-		Renderer(GLFWwindow& parent);
+		Renderer(GLFWwindow& parent, Shader* shader = new Shader());
 		~Renderer();
 
 		Camera* GetCamera() { return m_Camera; }
 		
-		void SetCurrentShader(Shader* shader) { m_CurrentShader = shader; }
+		void SetCurrentShader(Shader* shader) { m_Shader = shader; }
 
 		void AddObject(RenderObject* object);
 
@@ -34,7 +34,7 @@ namespace rendering {
 
 		GLFWwindow* m_Parent;
 
-		Shader* m_CurrentShader;
+		Shader* m_Shader;
 
 		glm::mat4 m_ViewMatrix;
 		glm::mat4 m_ProjectionMatrix;

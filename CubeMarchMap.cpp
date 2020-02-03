@@ -21,5 +21,6 @@ namespace cubemarch {
 		for (int i = 0; i < size; i++) {
 			m_Nodes[i].weight = values[i];
 		}
+		return true;
 	}
 }

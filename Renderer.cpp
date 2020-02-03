@@ -44,7 +44,7 @@ namespace rendering {
 
 		m_ViewMatrix = m_Camera->BuildViewMatrix();
 		
-		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+		//glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		glUseProgram(m_Shader->GetProgram());
 		glUniformMatrix4fv(glGetUniformLocation(m_Shader->GetProgram(), "viewMatrix"), 1, GL_FALSE, (float*)&m_ViewMatrix);
 		glUniformMatrix4fv(glGetUniformLocation(m_Shader->GetProgram(), "projectionMatrix"), 1, GL_FALSE, (float*)&m_ProjectionMatrix);
@@ -53,7 +53,7 @@ namespace rendering {
 			glUniformMatrix4fv(glGetUniformLocation(m_Shader->GetProgram(), "modelMatrix"), 1, GL_FALSE, (float*)&transform);
 			object->Draw();
 		}
-		glfwSwapBuffers(m_Parent);
+		//glfwSwapBuffers(m_Parent);
 		glUseProgram(0);
 	}
 }

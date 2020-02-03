@@ -1,5 +1,7 @@
 #include "CubeMarchMap.h"
 
+#include <random>
+
 namespace cubemarch {
 	CubeMarchMap::CubeMarchMap() : CubeMarchMap(10, 10, 10) {
 		
@@ -10,7 +12,8 @@ namespace cubemarch {
 		for (int xx = 0; xx < x; xx++) {
 			for (int yy = 0; yy < y; yy++) {
 				for (int zz = 0; zz < z; zz++) {
-					m_Nodes[xx + yy * x + zz * x * y] = CubeMarchNode({ xx, yy, zz, 0.0f });
+					float value = float(float(rand() % 1000) / 1000);
+					m_Nodes[xx + yy * x + zz * x * y] = CubeMarchNode({ xx, yy, zz, value });
 				}
 			}
 		}

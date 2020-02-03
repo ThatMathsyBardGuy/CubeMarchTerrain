@@ -18,6 +18,7 @@ namespace rendering {
 		~Renderer();
 
 		Camera* GetCamera() { return m_Camera; }
+		void SetCamera(Camera* camera) { m_Camera = camera; }
 		
 		void SetCurrentShader(Shader* shader) { m_Shader = shader; }
 

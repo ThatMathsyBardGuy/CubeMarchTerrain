@@ -11,12 +11,28 @@
 #include <gtx/rotate_vector.hpp>
 
 #include "Renderer.h"
+#include "CubeMarchMap.h"
 
 #define CAMERA_SPEED 3
 #define CAMERA_TILT_SPEED 1
 #define MOUSE_SENSITIVITY 0.5f
 
 #define SHADERDIR "Shaders/"
+
+rendering::RenderObject* GenerateCubeMarchNodeVisualisation(cubemarch::CubeMarchMap* map) {
+	std::vector<rendering::Vertex> vertices;
+	std::vector<unsigned int> indices;
+	vertices.resize(map->GetNumOfNodes());
+	indices.resize(vertices.size());
+	for (int i = 0; i < vertices.size(); i++) {
+		cubemarch::CubeMarchNode node = map->GetNodes()[i];
+		vertices.at(i) = rendering::Vertex({ (GLfloat)node.x, (GLfloat)node.y, (GLfloat)node.z, 0, 0, node.weight, node.weight, node.weight, 1, 0, 0, 0 });
+		indices.at(i) = i;
+	}
+	rendering::Mesh* mesh = new rendering::Mesh(vertices, indices, "CubeMarch mesh");
+	rendering::RenderObject* renderObject = new rendering::RenderObject(mesh);
+	return renderObject;
+}
 
 void ProcessInput(GLFWwindow* window, std::map<int, bool>& buttonstates) {
 	for (std::map<int, bool>::iterator it = buttonstates.begin(); it != buttonstates.end(); it++) {
@@ -68,18 +84,12 @@ int main()
 	rendering::Renderer renderer = rendering::Renderer(*window, &defaultShader);
 
 	rendering::Camera* camera = renderer.GetCamera();
-	
-	rendering::Mesh* quad = rendering::Mesh::GenerateQuad();
-	rendering::RenderObject renderObject(quad);
 
-	glm::mat4 transform = glm::mat4(1.0f);
-	transform = glm::translate(transform, glm::vec3(1, 1, 2));
-	transform = glm::rotate(transform, glm::radians(45.0f), glm::vec3(0, 0, 1));
-	
-	rendering::RenderObject renderObject2(quad, transform);
+	cubemarch::CubeMarchMap cubeMarchMap(10, 10, 10);
 
-	renderer.AddObject(&renderObject);
-	renderer.AddObject(&renderObject2);
+	rendering::RenderObject* cubeMarchRenderObject = GenerateCubeMarchNodeVisualisation(&cubeMarchMap);
+
+	renderer.AddObject(cubeMarchRenderObject);
 
 	std::map<int, bool> buttonStates;
 	buttonStates.insert(std::pair<int, bool>(GLFW_KEY_0, false));
@@ -133,6 +143,7 @@ int main()
 		if (buttonStates.at(GLFW_KEY_RIGHT)) camera->SetForward(glm::rotate(camera->GetForward(), -tiltSpeed, camera->GetUp()));
 		
 		renderer.RenderObjects();
+		glfwSwapBuffers(window);
 		glfwPollEvents();
 		ProcessInput(window, buttonStates);
 	}

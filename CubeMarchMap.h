@@ -16,7 +16,11 @@ namespace cubemarch {
 	public:
 		CubeMarchMap();
 		CubeMarchMap(int xsize, int ysize, int zsize);
-		~CubeMarchMap();
+		~CubeMarchMap() {};
+
+		CubeMarchNode* GetNodes() { return m_Nodes; }
+
+		int GetNumOfNodes() { return m_XSize * m_YSize * m_ZSize; }
 
 		bool SetNodeValues(float values[], int size);
 

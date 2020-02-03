@@ -16,6 +16,8 @@
 #define CAMERA_TILT_SPEED 1
 #define MOUSE_SENSITIVITY 0.5f
 
+#define SHADERDIR "Shaders/"
+
 void ProcessInput(GLFWwindow* window, std::map<int, bool>& buttonstates) {
 	for (std::map<int, bool>::iterator it = buttonstates.begin(); it != buttonstates.end(); it++) {
 		it->second = glfwGetKey(window, it->first) == GLFW_PRESS;
@@ -61,7 +63,9 @@ int main()
 
 	glClearColor(0.1, 0.2, 0.2, 1.0);
 
-	rendering::Renderer renderer = rendering::Renderer(*window);
+	rendering::Shader defaultShader = rendering::Shader(std::string(SHADERDIR"default.vert"), std::string(SHADERDIR"default.frag"));
+ 
+	rendering::Renderer renderer = rendering::Renderer(*window, &defaultShader);
 
 	rendering::Camera* camera = renderer.GetCamera();
 	

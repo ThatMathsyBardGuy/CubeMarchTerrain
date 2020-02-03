@@ -34,6 +34,36 @@ namespace rendering {
 	}
 
 	Shader::Shader(const char* vertexsource, const char* fragmentsource) {
+		LoadShaderCode(vertexsource, fragmentsource);
+
+		SetDefaultAttributes();
+	}
+
+	Shader::Shader(std::string vertexfile, std::string fragmentfile) {
+		std::string vertexSource;
+		std::string fragmentSource;
+		if (!LoadShaderFile(vertexfile, vertexSource) || !LoadShaderFile(fragmentfile, fragmentSource)) {
+			std::cout << "Compiling Failed, reverting to debug shader" << std::endl;
+			LoadShaderCode(DEBUG_VERT_SHADER_SRC, DEBUG_FRAG_SHADER_SRC);
+		}
+		else {
+			const char* vertexCode = vertexSource.c_str();
+			const char* fragmentCode = fragmentSource.c_str();
+
+			LoadShaderCode(vertexCode, fragmentCode);
+		}
+	}
+
+	Shader::~Shader() {
+		for (GLuint shader : m_ShaderStages) {
+			glDeleteShader(shader);
+		}
+	}
+
+	void Shader::SetDefaultAttributes() {
+	}
+
+	void Shader::LoadShaderCode(const char* vertexsource, const char* fragmentsource) {
 		m_ShaderStages[VERTEX] = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(m_ShaderStages[VERTEX], 1, &vertexsource, NULL);
 		glCompileShader(m_ShaderStages[VERTEX]);
@@ -51,7 +81,7 @@ namespace rendering {
 				std::cout << "ERROR: Shader failed to compile" << std::endl;
 			}
 		}
-		
+
 		m_Program = glCreateProgram();
 		glAttachShader(m_Program, m_ShaderStages[VERTEX]);
 		glAttachShader(m_Program, m_ShaderStages[FRAGMENT]);
@@ -62,30 +92,6 @@ namespace rendering {
 			glGetProgramInfoLog(m_Program, 512, NULL, infoLog);
 			std::cout << "ERROR: Program failed to link" << std::endl;
 		}
-
-		SetDefaultAttributes();
-	}
-
-	Shader::Shader(std::string vertexfile, std::string fragmentfile) {
-		std::string vertexSource;
-		std::string fragmentSource;
-		if (!LoadShaderFile(vertexfile, vertexSource) || !LoadShaderFile(fragmentfile, fragmentSource)) {
-			std::cout << "Compiling Failed, reverting to debug shader" << std::endl;
-			vertexSource = DEBUG_VERT_SHADER_SRC;
-			fragmentSource = DEBUG_FRAG_SHADER_SRC;
-		}
-	
-		Shader(vertexSource.c_str(), fragmentSource.c_str());
-
-	}
-
-	Shader::~Shader() {
-		for (GLuint shader : m_ShaderStages) {
-			glDeleteShader(shader);
-		}
-	}
-
-	void Shader::SetDefaultAttributes() {
 	}
 
 	bool Shader::LoadShaderFile(std::string from, std::string& into) {

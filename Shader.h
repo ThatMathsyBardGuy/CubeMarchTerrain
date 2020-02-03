@@ -18,6 +18,8 @@ namespace rendering {
 		GLuint GetProgram() { return m_Program; }
 
 	protected:
+		void LoadShaderCode(const char* vertexsource, const char* fragmentsource);
+
 		void SetDefaultAttributes();
 
 		bool LoadShaderFile(std::string from, std::string& into);

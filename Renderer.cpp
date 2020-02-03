@@ -17,7 +17,7 @@ namespace rendering {
 	}
 
 	Renderer::~Renderer() {
-		delete m_Shader;
+		//delete m_Shader;
 		m_Objects.clear();
 	}
 

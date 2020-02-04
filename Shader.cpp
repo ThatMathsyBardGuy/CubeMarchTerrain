@@ -54,6 +54,23 @@ namespace rendering {
 		}
 	}
 
+	Shader::Shader(std::string vertexfile, std::string fragmentfile, std::string geometryfile) {
+		std::string vertexSource;
+		std::string fragmentSource;
+		std::string geometrySource;
+		if (!LoadShaderFile(vertexfile, vertexSource) || !LoadShaderFile(fragmentfile, fragmentSource) || !LoadShaderFile(geometryfile, geometrySource)) {
+			std::cout << "Compiling Failed, reverting to debug shader" << std::endl;
+			LoadShaderCode(DEBUG_VERT_SHADER_SRC, DEBUG_FRAG_SHADER_SRC);
+		}
+		else {
+			const char* vertexCode = vertexSource.c_str();
+			const char* fragmentCode = fragmentSource.c_str();
+			const char* geometryCode = geometrySource.c_str();
+
+			LoadShaderCode(vertexCode, fragmentCode, geometryCode);
+		}
+	}
+
 	Shader::~Shader() {
 		for (GLuint shader : m_ShaderStages) {
 			glDeleteShader(shader);
@@ -63,7 +80,7 @@ namespace rendering {
 	void Shader::SetDefaultAttributes() {
 	}
 
-	void Shader::LoadShaderCode(const char* vertexsource, const char* fragmentsource) {
+	void Shader::LoadShaderCode(const char* vertexsource, const char* fragmentsource, const char* geometrysource) {
 		m_ShaderStages[VERTEX] = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(m_ShaderStages[VERTEX], 1, &vertexsource, NULL);
 		glCompileShader(m_ShaderStages[VERTEX]);
@@ -71,6 +88,12 @@ namespace rendering {
 		m_ShaderStages[FRAGMENT] = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(m_ShaderStages[FRAGMENT], 1, &fragmentsource, NULL);
 		glCompileShader(m_ShaderStages[FRAGMENT]);
+
+		if (geometrysource != "") {
+			m_ShaderStages[GEOMETRY] = glCreateShader(GL_GEOMETRY_SHADER);
+			glShaderSource(m_ShaderStages[GEOMETRY], 1, &geometrysource, NULL);
+			glCompileShader(m_ShaderStages[GEOMETRY]);
+		}
 
 		int success;
 		char infoLog[512];
@@ -85,6 +108,11 @@ namespace rendering {
 		m_Program = glCreateProgram();
 		glAttachShader(m_Program, m_ShaderStages[VERTEX]);
 		glAttachShader(m_Program, m_ShaderStages[FRAGMENT]);
+
+		if (geometrysource != "") {
+			glAttachShader(m_Program, m_ShaderStages[GEOMETRY]);
+		}
+
 		glLinkProgram(m_Program);
 
 		glGetProgramiv(m_Program, GL_LINK_STATUS, &success);

@@ -31,6 +31,7 @@ rendering::RenderObject* GenerateCubeMarchNodeVisualisation(cubemarch::CubeMarch
 	}
 	rendering::Mesh* mesh = new rendering::Mesh(vertices, indices, "CubeMarch mesh");
 	rendering::RenderObject* renderObject = new rendering::RenderObject(mesh);
+	renderObject->SetDrawMode(GL_POINTS);
 	return renderObject;
 }
 
@@ -80,8 +81,9 @@ int main()
 	glClearColor(0.1, 0.2, 0.2, 1.0);
 
 	rendering::Shader defaultShader = rendering::Shader(std::string(SHADERDIR"default.vert"), std::string(SHADERDIR"default.frag"));
- 
-	rendering::Renderer renderer = rendering::Renderer(*window, &defaultShader);
+	rendering::Shader pointquadShader = rendering::Shader(std::string(SHADERDIR"pointquad.vert"), std::string(SHADERDIR"pointquad.frag"), std::string(SHADERDIR"pointquad.geom"));
+
+	rendering::Renderer renderer = rendering::Renderer(*window, &pointquadShader);
 
 	rendering::Camera* camera = renderer.GetCamera();
 

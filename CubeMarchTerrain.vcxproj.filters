@@ -36,9 +36,6 @@
     <ClCompile Include="CubeMarchMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CubeMarchNodeVisualiser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Mesh.h">
@@ -60,9 +57,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CubeMarchMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CubeMarchNodeVisualiser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

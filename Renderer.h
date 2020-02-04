@@ -23,6 +23,7 @@ namespace rendering {
 		void SetCurrentShader(Shader* shader) { m_Shader = shader; }
 
 		void AddObject(RenderObject* object);
+		bool RemoveObject(RenderObject* object);
 
 		void RenderObjects();
 

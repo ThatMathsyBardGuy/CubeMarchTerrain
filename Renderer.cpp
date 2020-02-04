@@ -25,6 +25,16 @@ namespace rendering {
 		m_Objects.push_back(object);
 	}
 
+	bool Renderer::RemoveObject(RenderObject* object) {
+		for (std::vector<RenderObject*>::iterator it = m_Objects.begin(); it != m_Objects.end(); it++) {
+			if (*it == object) {
+				m_Objects.erase(it);
+				return true;
+			}
+		}
+		return false;
+	}
+
 	void Renderer::SortObjectsByDepth() {
 		for (RenderObject* obj : m_Objects) {
 			glm::mat4 transform = obj->GetTransform();

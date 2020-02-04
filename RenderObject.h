@@ -16,6 +16,8 @@ namespace rendering {
 		void SetCameraDistance(float dist) { m_CameraDistance = dist; }
 		float GetCameraDistance() { return m_CameraDistance; }
 
+		Mesh* GetMesh() { return m_Mesh; }
+
 		virtual void Draw();
 
 		static bool CompareByDepth(RenderObject* a, RenderObject* b) { return a->GetCameraDistance() < b->GetCameraDistance(); }

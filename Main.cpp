@@ -5,6 +5,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <algorithm>
 #include <map>
 
 #include <gtc/matrix_transform.hpp>
@@ -19,20 +20,19 @@
 
 #define SHADERDIR "Shaders/"
 
-rendering::RenderObject* GenerateCubeMarchNodeVisualisation(cubemarch::CubeMarchMap* map) {
+void GenerateCubeMarchNodeVisualisation(cubemarch::CubeMarchMap* map, float surfacelevel, rendering::RenderObject& object) {
 	std::vector<rendering::Vertex> vertices;
 	std::vector<unsigned int> indices;
-	vertices.resize(map->GetNumOfNodes());
-	indices.resize(vertices.size());
-	for (int i = 0; i < vertices.size(); i++) {
+	for (int i = 0; i < map->GetNumOfNodes(); i++) {
 		cubemarch::CubeMarchNode node = map->GetNodes()[i];
-		vertices.at(i) = rendering::Vertex({ (GLfloat)node.x, (GLfloat)node.y, (GLfloat)node.z, 0, 0, node.weight, node.weight, node.weight, 1, 0, 0, 0 });
-		indices.at(i) = i;
+		if (node.weight > surfacelevel) {
+			indices.push_back(vertices.size());
+			vertices.emplace_back(rendering::Vertex({ (GLfloat)node.x, (GLfloat)node.y, (GLfloat)node.z, 0, 0, node.weight, node.weight, node.weight, 1.0, 0, 0, 0 }));
+		}
 	}
-	rendering::Mesh* mesh = new rendering::Mesh(vertices, indices, "CubeMarch mesh");
-	rendering::RenderObject* renderObject = new rendering::RenderObject(mesh);
-	renderObject->SetDrawMode(GL_POINTS);
-	return renderObject;
+	object.GetMesh()->SetVertices(vertices);
+	object.GetMesh()->SetIndices(indices);
+	object.SetDrawMode(GL_POINTS);
 }
 
 void ProcessInput(GLFWwindow* window, std::map<int, bool>& buttonstates) {
@@ -89,12 +89,7 @@ int main()
 
 	cubemarch::CubeMarchMap cubeMarchMap(10, 10, 10);
 
-	rendering::RenderObject* cubeMarchRenderObject = GenerateCubeMarchNodeVisualisation(&cubeMarchMap);
-
-	renderer.AddObject(cubeMarchRenderObject);
-
 	std::map<int, bool> buttonStates;
-	buttonStates.insert(std::pair<int, bool>(GLFW_KEY_0, false));
 	buttonStates.insert(std::pair<int, bool>(GLFW_KEY_ESCAPE, false));
 	buttonStates.insert(std::pair<int, bool>(GLFW_KEY_R, false));
 	buttonStates.insert(std::pair<int, bool>(GLFW_KEY_D, false));
@@ -106,6 +101,8 @@ int main()
 	buttonStates.insert(std::pair<int, bool>(GLFW_KEY_DOWN, false));
 	buttonStates.insert(std::pair<int, bool>(GLFW_KEY_LEFT, false));
 	buttonStates.insert(std::pair<int, bool>(GLFW_KEY_RIGHT, false));
+	buttonStates.insert(std::pair<int, bool>(GLFW_KEY_EQUAL, false));
+	buttonStates.insert(std::pair<int, bool>(GLFW_KEY_MINUS, false));
 
 	float currentTime, lastTime, dt;
 	
@@ -116,9 +113,18 @@ int main()
 	float tiltSpeed;
 	glm::vec3 cameraRight;
 
+	float surfaceLevel = 0.0f;
+	float surfaceIncrement = 0.01f;
+
+	rendering::RenderObject cubeMarchRenderObject(rendering::Mesh::GenerateQuad(), glm::mat4(1.0f), "CubeMarch Visualiser"); 
+	GenerateCubeMarchNodeVisualisation(&cubeMarchMap, surfaceLevel, cubeMarchRenderObject);
+	renderer.AddObject(&cubeMarchRenderObject);
+
 	while (!glfwWindowShouldClose(window))
 	{
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
+		GenerateCubeMarchNodeVisualisation(&cubeMarchMap, surfaceLevel, cubeMarchRenderObject);
 
 		lastTime = currentTime;
 		currentTime = glfwGetTime();
@@ -144,6 +150,9 @@ int main()
 		if (buttonStates.at(GLFW_KEY_LEFT)) camera->SetForward(glm::rotate(camera->GetForward(), tiltSpeed, camera->GetUp()));
 		if (buttonStates.at(GLFW_KEY_RIGHT)) camera->SetForward(glm::rotate(camera->GetForward(), -tiltSpeed, camera->GetUp()));
 		
+		if (buttonStates.at(GLFW_KEY_EQUAL)) surfaceLevel = std::min(surfaceLevel + surfaceIncrement, 1.0f);
+		if (buttonStates.at(GLFW_KEY_MINUS)) surfaceLevel = std::max(surfaceLevel - surfaceIncrement, 0.0f);
+
 		renderer.RenderObjects();
 		glfwSwapBuffers(window);
 		glfwPollEvents();

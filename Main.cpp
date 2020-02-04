@@ -115,7 +115,7 @@ int main()
 	glm::vec3 cameraRight;
 
 	float surfaceLevel = 0.0f;
-	float surfaceIncrement = 0.01f;
+	float surfaceIncrement = 0.30f;
 
 	rendering::RenderObject cubeMarchRenderObject(rendering::Mesh::GenerateQuad(), glm::mat4(1.0f), "CubeMarch Visualiser"); 
 	GenerateCubeMarchNodeVisualisation(&cubeMarchMap, surfaceLevel, cubeMarchRenderObject);
@@ -151,8 +151,8 @@ int main()
 		if (buttonStates.at(GLFW_KEY_LEFT)) camera->SetForward(glm::rotate(camera->GetForward(), tiltSpeed, camera->GetUp()));
 		if (buttonStates.at(GLFW_KEY_RIGHT)) camera->SetForward(glm::rotate(camera->GetForward(), -tiltSpeed, camera->GetUp()));
 		
-		if (buttonStates.at(GLFW_KEY_EQUAL)) surfaceLevel = std::min(surfaceLevel + surfaceIncrement, 1.0f);
-		if (buttonStates.at(GLFW_KEY_MINUS)) surfaceLevel = std::max(surfaceLevel - surfaceIncrement, 0.0f);
+		if (buttonStates.at(GLFW_KEY_EQUAL)) surfaceLevel = std::min(surfaceLevel + surfaceIncrement * dt, 1.0f);
+		if (buttonStates.at(GLFW_KEY_MINUS)) surfaceLevel = std::max(surfaceLevel - surfaceIncrement * dt, 0.0f);
 
 		renderer.RenderObjects();
 		glfwSwapBuffers(window);

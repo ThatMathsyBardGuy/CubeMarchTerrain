@@ -4,6 +4,9 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#include <PerlinNoise.hpp>
+
 #include <iostream>
 #include <algorithm>
 #include <map>
@@ -78,15 +81,18 @@ int main()
 	
 	glViewport(0, 0, 800, 600);
 
-	glClearColor(0.1, 0.2, 0.2, 1.0);
+	glClearColor(0.1, 0.3, 0.2, 1.0);
 
 	rendering::Shader defaultShader = rendering::Shader(std::string(SHADERDIR"default.vert"), std::string(SHADERDIR"default.frag"));
 	rendering::Shader pointquadShader = rendering::Shader(std::string(SHADERDIR"pointquad.vert"), std::string(SHADERDIR"pointquad.frag"), std::string(SHADERDIR"pointquad.geom"));
-	rendering::Shader pointsphereShader = rendering::Shader(std::string(SHADERDIR"pointquad.vert"), std::string(SHADERDIR"pointquad.frag"), std::string(SHADERDIR"pointsphere.geom"));
 
-	rendering::Renderer renderer = rendering::Renderer(*window, &pointquadShader);
+	rendering::Renderer nodeRenderer = rendering::Renderer(*window, &pointquadShader);
+	rendering::Renderer terrainRenderer = rendering::Renderer(*window, &defaultShader);
 
-	rendering::Camera* camera = renderer.GetCamera();
+	rendering::Camera* camera = nodeRenderer.GetCamera();
+
+	delete terrainRenderer.GetCamera();
+	terrainRenderer.SetCamera(camera);
 
 	cubemarch::CubeMarchMap cubeMarchMap(10, 10, 10);
 
@@ -114,18 +120,24 @@ int main()
 	float tiltSpeed;
 	glm::vec3 cameraRight;
 
-	float surfaceLevel = 0.0f;
+	float surfaceLevel = 0.5f;
 	float surfaceIncrement = 0.30f;
 
 	rendering::RenderObject cubeMarchRenderObject(rendering::Mesh::GenerateQuad(), glm::mat4(1.0f), "CubeMarch Visualiser"); 
 	GenerateCubeMarchNodeVisualisation(&cubeMarchMap, surfaceLevel, cubeMarchRenderObject);
-	renderer.AddObject(&cubeMarchRenderObject);
+	nodeRenderer.AddObject(&cubeMarchRenderObject);
+
+	rendering::Mesh* terrainMesh = cubeMarchMap.GenerateMesh(surfaceLevel);
+	rendering::RenderObject terrainRenderObject(terrainMesh, glm::mat4(1.0f), "Terrain Visualiser");
+	terrainRenderer.AddObject(&terrainRenderObject);
 
 	while (!glfwWindowShouldClose(window))
 	{
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 		GenerateCubeMarchNodeVisualisation(&cubeMarchMap, surfaceLevel, cubeMarchRenderObject);
+		
+		*terrainMesh = *cubeMarchMap.GenerateMesh(surfaceLevel);
 
 		lastTime = currentTime;
 		currentTime = glfwGetTime();
@@ -154,7 +166,8 @@ int main()
 		if (buttonStates.at(GLFW_KEY_EQUAL)) surfaceLevel = std::min(surfaceLevel + surfaceIncrement * dt, 1.0f);
 		if (buttonStates.at(GLFW_KEY_MINUS)) surfaceLevel = std::max(surfaceLevel - surfaceIncrement * dt, 0.0f);
 
-		renderer.RenderObjects();
+		nodeRenderer.RenderObjects();
+		terrainRenderer.RenderObjects();
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		ProcessInput(window, buttonStates);

@@ -266,7 +266,7 @@ namespace cubemarch {
 	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}
 	};*/
 
-	static int8_t CUBE_CASES[256][16] = {
+	static int CUBE_CASES[256][16] = {
 		{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
 		{0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
 		{0, 1, 9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
@@ -536,7 +536,7 @@ namespace cubemarch {
 		for (int xx = 0; xx < x; xx++) {
 			for (int yy = 0; yy < y; yy++) {
 				for (int zz = 0; zz < z; zz++) {
-					float value = noise.octaveNoise0_1(float(xx) / x, float(yy) / y, float(zz)/z, 8);
+					float value = noise.octaveNoise0_1(float(xx+1) / x, float(yy+1) / y, float(zz+1)/z, 8);
 					m_Nodes[xx + yy * x + zz * x * y] = CubeMarchNode({ xx, yy, zz, value });
 				}
 			}
@@ -567,13 +567,13 @@ namespace cubemarch {
 					int corners[8] = {
 						(xcoord)+(ycoord)+(zcoord),
 						(xcoord+1)+(ycoord)+(zcoord),
-						(xcoord+1)+(ycoord)+(zcoord + 1),
-						(xcoord)+(ycoord)+(zcoord + 1),
+						(xcoord+1)+(ycoord)+(zcoord + (m_XSize * m_YSize)),
+						(xcoord)+(ycoord)+(zcoord + (m_XSize * m_YSize)),
 
-						(xcoord)+(ycoord+1) + (zcoord),
-						(xcoord + 1)+(ycoord+1) + (zcoord),
-						(xcoord + 1)+(ycoord+1) + (zcoord+1),
-						(xcoord)+(ycoord+1) + (zcoord+1)
+						(xcoord)+(ycoord+m_XSize) + (zcoord),
+						(xcoord + 1)+(ycoord+ m_XSize) + (zcoord),
+						(xcoord + 1)+(ycoord+ m_XSize) + (zcoord+(m_XSize * m_YSize)),
+						(xcoord)+(ycoord+ m_XSize) + (zcoord+ (m_XSize * m_YSize))
 					};
 
 					glm::vec3 midpoints[12] = {
@@ -593,14 +593,25 @@ namespace cubemarch {
 						glm::vec3(xx, yy+0.5f, zz + 1)
 					};
 
-					uint8_t cubeindex = 0;
+					int cubeindex = 0;
+					//if (m_Nodes[corners[0]].weight > surfacevalue) cubeindex |= 1;
+					//if (m_Nodes[corners[1]].weight > surfacevalue) cubeindex |= 2;
+					//if (m_Nodes[corners[2]].weight > surfacevalue) cubeindex |= 4;
+					//if (m_Nodes[corners[3]].weight > surfacevalue) cubeindex |= 8;
+					//if (m_Nodes[corners[4]].weight > surfacevalue) cubeindex |= 16;
+					//if (m_Nodes[corners[5]].weight > surfacevalue) cubeindex |= 32;
+					//if (m_Nodes[corners[6]].weight > surfacevalue) cubeindex |= 64;
+					//if (m_Nodes[corners[7]].weight > surfacevalue) cubeindex |= 128;
+					//std::cout << "--------" << std::endl;
 					for (int i = 0; i < 8; i++) {
+						//std::cout << "node index: " << corners[i] << std::endl;
+						//std::cout << "node coords: " << m_Nodes[corners[i]].x << ", " << m_Nodes[corners[i]].y << ", " << m_Nodes[corners[i]].z << std::endl;
 						if (m_Nodes[corners[i]].weight > surfacevalue) {
-							cubeindex |= 1 << i;
+							cubeindex |= (1 << i);
 						}
 					}
 
-					int8_t* edges = CUBE_CASES[cubeindex];
+					int* edges = CUBE_CASES[cubeindex];
 					int i = 0;
 					while (i < 16) {
 						int8_t edgeindex = edges[i];

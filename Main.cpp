@@ -95,7 +95,7 @@ int main()
 	delete terrainRenderer.GetCamera();
 	terrainRenderer.SetCamera(camera);
 
-	cubemarch::CubeMarchMap cubeMarchMap(100, 10, 100);
+	cubemarch::CubeMarchMap cubeMarchMap(10, 10, 10);
 
 	std::map<int, bool> buttonStates;
 	buttonStates.insert(std::pair<int, bool>(GLFW_KEY_ESCAPE, false));
@@ -126,11 +126,14 @@ int main()
 
 	rendering::RenderObject cubeMarchRenderObject(rendering::Mesh::GenerateQuad(), glm::mat4(1.0f), "CubeMarch Visualiser"); 
 	GenerateCubeMarchNodeVisualisation(&cubeMarchMap, surfaceLevel, cubeMarchRenderObject);
-	//nodeRenderer.AddObject(&cubeMarchRenderObject);
+	nodeRenderer.AddObject(&cubeMarchRenderObject);
 
 	rendering::Mesh* terrainMesh = cubeMarchMap.GenerateMesh(surfaceLevel);
 	rendering::RenderObject terrainRenderObject(terrainMesh, glm::mat4(1.0f), "Terrain Visualiser");
 	terrainRenderer.AddObject(&terrainRenderObject);
+
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 
 	while (!glfwWindowShouldClose(window))
 	{

@@ -95,7 +95,7 @@ int main()
 	delete terrainRenderer.GetCamera();
 	terrainRenderer.SetCamera(camera);
 
-	cubemarch::CubeMarchMap cubeMarchMap(10, 10, 10);
+	cubemarch::CubeMarchMap cubeMarchMap(50, 30, 50);
 
 	std::map<int, bool> buttonStates;
 	buttonStates.insert(std::pair<int, bool>(GLFW_KEY_ESCAPE, false));
@@ -122,7 +122,7 @@ int main()
 	glm::vec3 cameraRight;
 
 	float surfaceLevel = 0.5f;
-	float surfaceIncrement = 0.30f;
+	float surfaceIncrement = 0.10f;
 
 	rendering::RenderObject cubeMarchRenderObject(rendering::Mesh::GenerateQuad(), glm::mat4(1.0f), "CubeMarch Visualiser"); 
 	GenerateCubeMarchNodeVisualisation(&cubeMarchMap, surfaceLevel, cubeMarchRenderObject);

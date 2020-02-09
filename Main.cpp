@@ -132,8 +132,8 @@ int main()
 	rendering::RenderObject terrainRenderObject(terrainMesh, glm::mat4(1.0f), "Terrain Visualiser");
 	terrainRenderer.AddObject(&terrainRenderObject);
 
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
 
 	while (!glfwWindowShouldClose(window))
 	{

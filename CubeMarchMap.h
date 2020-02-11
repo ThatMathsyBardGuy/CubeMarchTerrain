@@ -31,7 +31,7 @@ namespace cubemarch {
 		
 		bool SetNodeValues(float values[], int size);
 
-		rendering::Mesh* GenerateMesh(float surfacevalue);
+		void GenerateMesh(float surfacevalue, rendering::Mesh& mesh);
 
 	protected:
 		

@@ -292,7 +292,7 @@ namespace cubemarch {
 		return true;
 	}
 
-	rendering::Mesh* CubeMarchMap::GenerateMesh(float surfacevalue) {
+	void CubeMarchMap::GenerateMesh(float surfacevalue, rendering::Mesh& mesh) {
 		std::vector<rendering::Vertex> vertices;
 		std::vector<unsigned int> indices;
 		for (int xx = 0; xx < m_XSize; xx++) {
@@ -386,6 +386,7 @@ namespace cubemarch {
 				}
 			}
 		}
-		return new rendering::Mesh(vertices, indices, "CubeMarched Mesh");
+		mesh.SetIndices(indices);
+		mesh.SetVertices(vertices);
 	}
 }

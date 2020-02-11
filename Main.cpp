@@ -128,7 +128,8 @@ int main()
 	GenerateCubeMarchNodeVisualisation(&cubeMarchMap, surfaceLevel, cubeMarchRenderObject);
 	nodeRenderer.AddObject(&cubeMarchRenderObject);
 
-	rendering::Mesh* terrainMesh = cubeMarchMap.GenerateMesh(surfaceLevel);
+	rendering::Mesh* terrainMesh = rendering::Mesh::GenerateQuad();
+	cubeMarchMap.GenerateMesh(surfaceLevel, *terrainMesh);
 	rendering::RenderObject terrainRenderObject(terrainMesh, glm::mat4(1.0f), "Terrain Visualiser");
 	terrainRenderer.AddObject(&terrainRenderObject);
 
@@ -168,11 +169,11 @@ int main()
 
 		if (buttonStates.at(GLFW_KEY_EQUAL)) {
 			surfaceLevel = std::min(surfaceLevel + surfaceIncrement * dt, 1.0f);
-			*terrainMesh = *cubeMarchMap.GenerateMesh(surfaceLevel);
+			cubeMarchMap.GenerateMesh(surfaceLevel, *terrainMesh);
 		}
 		if (buttonStates.at(GLFW_KEY_MINUS)) {
 			surfaceLevel = std::max(surfaceLevel - surfaceIncrement * dt, 0.0f);
-			*terrainMesh = *cubeMarchMap.GenerateMesh(surfaceLevel);
+			cubeMarchMap.GenerateMesh(surfaceLevel, *terrainMesh);
 		}
 
 		nodeRenderer.RenderObjects();

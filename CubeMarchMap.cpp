@@ -341,18 +341,7 @@ namespace cubemarch {
 					};
 
 					int cubeindex = 0;
-					//if (m_Nodes[corners[0]].weight > surfacevalue) cubeindex |= 1;
-					//if (m_Nodes[corners[1]].weight > surfacevalue) cubeindex |= 2;
-					//if (m_Nodes[corners[2]].weight > surfacevalue) cubeindex |= 4;
-					//if (m_Nodes[corners[3]].weight > surfacevalue) cubeindex |= 8;
-					//if (m_Nodes[corners[4]].weight > surfacevalue) cubeindex |= 16;
-					//if (m_Nodes[corners[5]].weight > surfacevalue) cubeindex |= 32;
-					//if (m_Nodes[corners[6]].weight > surfacevalue) cubeindex |= 64;
-					//if (m_Nodes[corners[7]].weight > surfacevalue) cubeindex |= 128;
-					//std::cout << "--------" << std::endl;
 					for (int i = 0; i < 8; i++) {
-						//std::cout << "node index: " << corners[i] << std::endl;
-						//std::cout << "node coords: " << m_Nodes[corners[i]].x << ", " << m_Nodes[corners[i]].y << ", " << m_Nodes[corners[i]].z << std::endl;
 						if (m_Nodes[corners[i]].weight > surfacevalue) {
 							cubeindex |= (1 << i);
 						}
@@ -366,7 +355,6 @@ namespace cubemarch {
 							i = 16;
 							continue;
 						}
-						//glm::vec3 point = midpoints[edgeindex];
 						CubeMarchNode* startnode = &m_Nodes[corners[endpoints[edgeindex][0]]];
 						CubeMarchNode* endnode = &m_Nodes[corners[endpoints[edgeindex][1]]];
 						glm::vec3 diff = glm::vec3(endnode->x - startnode->x, endnode->y - startnode->y, endnode->z - startnode->z);

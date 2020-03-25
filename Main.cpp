@@ -16,6 +16,7 @@
 
 #include "Renderer.h"
 #include "CubeMarchMap.h"
+#include "ComputeShader.h"
 
 #define CAMERA_SPEED 3
 #define CAMERA_TILT_SPEED 1
@@ -87,11 +88,14 @@ int main()
 	rendering::Shader flatshadeShader = rendering::Shader(std::string(SHADERDIR"flatshading.vert"), std::string(SHADERDIR"flatshading.frag"));
 	rendering::Shader pointquadShader = rendering::Shader(std::string(SHADERDIR"pointquad.vert"), std::string(SHADERDIR"pointquad.frag"), std::string(SHADERDIR"pointquad.geom"));
 
+	rendering::ComputeShader terrainGenShader = rendering::ComputeShader(std::string(SHADERDIR"terraingen.compute"));
+
 	rendering::Renderer nodeRenderer = rendering::Renderer(*window, &pointquadShader);
 	rendering::Renderer terrainRenderer = rendering::Renderer(*window, &flatshadeShader);
 
 	rendering::Camera* camera = nodeRenderer.GetCamera();
 
+	//TODO this is a messy way of syncing the cameras, make a better one?
 	delete terrainRenderer.GetCamera();
 	terrainRenderer.SetCamera(camera);
 

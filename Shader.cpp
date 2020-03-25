@@ -102,6 +102,7 @@ namespace rendering {
 			if (!success) {
 				glGetShaderInfoLog(m_ShaderStages[i], 512, NULL, infoLog);
 				std::cout << "ERROR: Shader failed to compile" << std::endl;
+				return;
 			}
 		}
 
@@ -124,7 +125,7 @@ namespace rendering {
 
 	bool Shader::LoadShaderFile(std::string from, std::string& into) {
 		std::ifstream file;
-		std::string temp;
+		std::string line;
 
 		std::cout << "Loading shader text from " << from << std::endl << std::endl;
 
@@ -135,8 +136,8 @@ namespace rendering {
 		}
 
 		while (!file.eof()) {
-			getline(file, temp);
-			into += temp + "\n";
+			getline(file, line);
+			into += line + "\n";
 		}
 
 		file.close();

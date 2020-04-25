@@ -1,9 +1,15 @@
 #include "CubeMarchMap.h"
 
+#include "ComputeShader.h"
+
 #include <random>
 #include <PerlinNoise.hpp>
 
 #include <iostream>
+
+#define SHADERDIR "Shaders/"
+
+
 
 namespace cubemarch {
 
@@ -282,6 +288,13 @@ namespace cubemarch {
 				}
 			}
 		}
+		m_ComputeShader = new rendering::ComputeShader(std::string(SHADERDIR"cubemarch.compute"), sizeof m_SSBOData, &m_SSBOData);
+		m_SSBOData.XSize = m_XSize;
+		m_SSBOData.YSize = m_YSize;
+		m_SSBOData.ZSize = m_ZSize;
+		for (int i = 0; i < glm::min(MAX_NODES, GetNumOfNodes()); i++) {
+			m_SSBOData.Nodes[i] = m_Nodes[i];
+		}
 	}
 
 	bool CubeMarchMap::SetNodeValues(float values[], int size) {
@@ -292,7 +305,11 @@ namespace cubemarch {
 		return true;
 	}
 
-	void CubeMarchMap::GenerateMesh(float surfacevalue, rendering::Mesh& mesh) {
+	void CubeMarchMap::GenerateMesh(float surfacevalue, rendering::Mesh& mesh, bool usegpu) {
+		usegpu ? GenerateMeshGPU(surfacevalue, mesh) : GenerateMeshCPU(surfacevalue, mesh);
+	}
+
+	void CubeMarchMap::GenerateMeshCPU(float surfacevalue, rendering::Mesh& mesh) {
 		std::vector<rendering::Vertex> vertices;
 		std::vector<unsigned int> indices;
 		for (int xx = 0; xx < m_XSize; xx++) {
@@ -353,7 +370,7 @@ namespace cubemarch {
 						int8_t edgeindex = edges[i];
 						if (edgeindex == -1) {
 							i = 16;
-							continue;
+							break;
 						}
 						CubeMarchNode* startnode = &m_Nodes[corners[endpoints[edgeindex][0]]];
 						CubeMarchNode* endnode = &m_Nodes[corners[endpoints[edgeindex][1]]];
@@ -366,7 +383,10 @@ namespace cubemarch {
 						float atten = glm::min(startatten, 1.0f - endatten);
 						
 						glm::vec3 startpoint = glm::vec3(startnode->x, startnode->y, startnode->z);
-						glm::vec3 point = startpoint + atten * diff;
+						//glm::vec3 point = startpoint + atten * diff;
+
+						glm::vec3 point = midpoints[edgeindex];
+
 						indices.push_back(vertices.size());
 						vertices.push_back(rendering::Vertex({ point.x, point.y, point.z, 0, 0, 0.8, 0.2, 0.2, 1.0, 0, 0, 0 }));
 						i++;
@@ -376,5 +396,33 @@ namespace cubemarch {
 		}
 		mesh.SetIndices(indices);
 		mesh.SetVertices(vertices);
+	}
+
+	void CubeMarchMap::GenerateMeshGPU(float surfacevalue, rendering::Mesh& mesh) {
+		m_SSBOData.TriIndex = 0;
+		m_SSBOData.SurfaceValue = surfacevalue;
+		m_ComputeShader->BufferData(&m_SSBOData);
+		m_ComputeShader->Dispatch(m_XSize - 1, m_YSize - 1, m_ZSize - 1);
+		CubeMarchSSBO outputssbo;
+		m_ComputeShader->GetData(&outputssbo);
+
+	    std::vector<rendering::Vertex> vertices;
+		std::vector<unsigned int> indices;
+		vertices.resize(outputssbo.TriIndex * 3);
+		///@TODO Optimise indices
+		indices.resize(vertices.size());
+		
+		for (int i = 0; i < outputssbo.TriIndex; i ++) {
+			Triangle tri = outputssbo.Tris[i];
+			vertices[i*3] = rendering::Vertex({ tri.points[0].x, tri.points[0].y, tri.points[0].z, 0, 0, 1.0f, 1.0f, 1.0f, 1.0f, 0, 0, 0 });
+			vertices[i*3+1] = rendering::Vertex({ tri.points[1].x, tri.points[1].y, tri.points[1].z, 0, 0, 1.0f, 1.0f, 1.0f, 1.0f, 0, 0, 0 });
+			vertices[i*3+2] = rendering::Vertex({ tri.points[2].x, tri.points[2].y, tri.points[2].z, 0, 0, 1.0f, 1.0f, 1.0f, 1.0f, 0, 0, 0 });
+		}
+
+		for (int i = 0; i < vertices.size(); i++) {
+			indices.at(i) = i;
+		}
+		mesh.SetVertices(vertices);
+		mesh.SetIndices(indices);
 	}
 }

@@ -6,15 +6,47 @@
 namespace rendering {
     const char* DEBUG_COMPUTE_SHADER_SRC = "";
 
-    ComputeShader::ComputeShader(const std::string& filepath) {
+    ComputeShader::ComputeShader(const std::string filepath, const size_t ssbosize, void* ssbodata) {
         std::string computeSource;
         if (!LoadShaderFile(filepath, computeSource)) {
             std::cout << "Compiling Failed, reverting to debug compute shader" << std::endl;
             LoadShaderCode(DEBUG_COMPUTE_SHADER_SRC);
+        } else {
+            LoadShaderCode(computeSource.c_str());
         }
+        m_DataSize = ssbosize;
+        glGenBuffers(1, &m_SSBO);
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_SSBO);
+        glBufferData(GL_SHADER_STORAGE_BUFFER, m_DataSize, ssbodata, GL_DYNAMIC_COPY);
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     }
 
-    //TODO this is a copy of Shader::LoadShaderFile - should there be a new inheritance heirarchy?
+    void ComputeShader::Dispatch(const uint32_t numgroupsx, const uint32_t numgroupsy, const uint32_t numgroupsz) {
+        glUseProgram(m_Program);
+        glDispatchCompute(numgroupsx, numgroupsy, numgroupsz);
+    }
+
+    void ComputeShader::BufferData(void* data) {
+        glUseProgram(m_Program);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_SSBO);
+        GLvoid* buffer = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_WRITE_ONLY);
+        memcpy(buffer, data, m_DataSize);
+        glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+        //GLuint blockindex = 0;
+        //blockindex = glGetProgramResourceIndex(m_Program, GL_SHADER_STORAGE_BLOCK, "SSBO");
+        //glShaderStorageBlockBinding(m_Program, blockindex, 2);
+    }
+
+    void ComputeShader::GetData(void* output) {
+        glUseProgram(m_Program);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_SSBO);
+        GLvoid* buffer = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_ONLY);
+        memcpy(output, buffer, m_DataSize);
+        glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+    }
+
+    //TODO this is a copy of Shader::LoadShaderFile - should there be a new inheritance hierarchy?
     bool ComputeShader::LoadShaderFile(std::string from, std::string& into) {
         std::ifstream file;
         std::string line;
@@ -48,7 +80,7 @@ namespace rendering {
         glGetShaderiv(m_ShaderStage, GL_COMPILE_STATUS, &success);
         if (!success) {
             glGetShaderInfoLog(m_ShaderStage, 512, NULL, infoLog);
-            std::cout << "ERROR: Compute shader failed to compile" << std::endl;
+            std::cout << "ERROR: Compute shader failed to compile : " << std::endl << infoLog << std::endl;
             return;
         }
 
@@ -60,7 +92,7 @@ namespace rendering {
         glGetProgramiv(m_Program, GL_LINK_STATUS, &success);
         if (!success) {
             glGetProgramInfoLog(m_Program, 512, NULL, infoLog);
-            std::cout << "ERROR: Compute program failed to link" << std::endl;
+            std::cout << "ERROR: Compute program failed to link" << std::endl << infoLog << std::endl;
         }
     }
 }

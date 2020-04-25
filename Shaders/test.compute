@@ -275,16 +275,6 @@ struct CubeMarchNode {
 	float weight;
 };
 
-struct Point {
-	float x;
-	float y;
-	float z;
-};
-
-struct Triangle {
-	Point points[3];
-};
-
 layout (std430, binding = 0) buffer SSBO {
 	int XSize;
 	int YSize;
@@ -292,103 +282,9 @@ layout (std430, binding = 0) buffer SSBO {
 	float SurfaceValue;
 	CubeMarchNode Nodes[100];
 	int SSBO_TriIndex;
-	Triangle SSBO_Tris[1000];
+	float SSBO_Tris[1000][3];
 };
 
 void main() {
-	unsigned int xx = gl_WorkGroupID.x;
-	unsigned int yy = gl_WorkGroupID.y;
-	unsigned int zz = gl_WorkGroupID.z;
-
-	unsigned int xcoord = xx;
-	unsigned int ycoord = yy * XSize;
-	unsigned int zcoord = zz * XSize * YSize;
-
-	const vec3 midpoints[12] = {
-		vec3(float(xx) + 0.5f, float(yy), float(zz)),					// 0
-		vec3(float(xx) + 1.0f, float(yy), float(zz) + 0.5f),			// 1
-		vec3(float(xx) + 0.5f, float(yy), float(zz) + 1.0f),			// 2
-		vec3(float(xx), float(yy), float(zz) + 0.5f),					// 3
-
-		vec3(float(xx) + 0.5f, float(yy) + 1.0f, float(zz)),			// 4
-		vec3(float(xx) + 1.0f, float(yy) + 1.0f, float(zz) + 0.5f),		// 5
-		vec3(float(xx) + 0.5f, float(yy) + 1.0f, float(zz) + 1.0f),		// 6
-		vec3(float(xx), float(yy) + 1.0f, float(zz) + 0.5f),			// 7
-
-		vec3(float(xx), float(yy)+0.5f, float(zz)),						// 8
-		vec3(float(xx) + 1.0f, float(yy)+0.5f, float(zz)),				// 9
-		vec3(float(xx) + 1.0f, float(yy)+0.5f, float(zz) + 1.0f),		// 10
-		vec3(float(xx), float(yy)+0.5f, float(zz) + 1.0f)				// 11
-	};
-
-	unsigned int corners[8] = {
-		(xcoord)+(ycoord)+(zcoord),
-		(xcoord+1)+(ycoord)+(zcoord),
-		(xcoord+1)+(ycoord)+(zcoord + (XSize * YSize)),
-		(xcoord)+(ycoord)+(zcoord + (XSize * YSize)),
-
-		(xcoord)+(ycoord + XSize) + (zcoord),
-		(xcoord + 1)+(ycoord + XSize) + (zcoord),
-		(xcoord + 1)+(ycoord + XSize) + (zcoord+(XSize * YSize)),
-		(xcoord)+(ycoord + XSize) + (zcoord+ (XSize * YSize))
-	};
-
-	int cubeindex = 0;
-	for (int i = 0; i < 8; i++) {
-		if (Nodes[corners[i]].weight > SurfaceValue) {
-			cubeindex |= (1 << i);
-		}
-	}
-
-	int edges[16];
-	for (int i = 0; i < 16; i++) {
-		edges[i] = CUBE_CASES[cubeindex][i];
-	}
-
-	int i = 0;
-	int t = 0;
-
-	int currenttriindex = 0;
-	Triangle currenttris[5];
-
-	while (i < 16) {
-		int edgeindex = edges[i];
-		if (edgeindex == -1) {
-			i = 16;
-			break;
-		}
-		CubeMarchNode startnode = Nodes[ corners[endpoints[edgeindex][0]] ];
-		CubeMarchNode endnode = Nodes[ corners[endpoints[edgeindex][1]] ];
-		vec3 diff = vec3(endnode.x - startnode.x, endnode.y - startnode.y, endnode.z - startnode.z);
-
-		float delta = endnode.weight - startnode.weight;
-		float startatten = (SurfaceValue - startnode.weight) / delta;
-		float endatten = (SurfaceValue - endnode.weight) / delta;
-		float atten = min(startatten, 1.0f - endatten);
-
-		vec3 startpoint = vec3(startnode.x, startnode.y, startnode.z);
-		//vec3 terrainPoint = startpoint + atten * diff;
-		
-		vec3 midpoint = midpoints[edgeindex];
-		currenttris[currenttriindex].points[t].x = midpoint.x;
-		currenttris[currenttriindex].points[t].y = midpoint.y;
-		currenttris[currenttriindex].points[t].z = midpoint.z;
-
-		///@DEBUG INFO REMOVE
-		if (t == 0) XSize = edgeindex;
-		if (t == 1) YSize = edgeindex;
-		if (t == 2) ZSize = edgeindex;
-
-		i++;
-		t++;
-		if (t == 3) {
-			t = 0;
-			currenttriindex++;
-		}
-	}
-
-	for (int i = 0; i < currenttriindex; i++) {
-		SSBO_Tris[SSBO_TriIndex] = currenttris[i];
-		SSBO_TriIndex ++;
-	}
+	
 }

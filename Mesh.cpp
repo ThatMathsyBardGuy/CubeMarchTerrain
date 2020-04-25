@@ -21,14 +21,6 @@ namespace rendering {
 		verts[1] = { -1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0 };
 		verts[2] = { 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0 };
 		verts[3] = { -1, -1, 0, 1, 0, 1, 1, 0, 1, 0, 0, 0 };
-
-		///@TEMP shrink the quad to check it isn't just filling the screen
-		for (int i = 0; i < 4; i++)
-		{
-			verts[i].x = verts[i].x / 2;
-			verts[i].y = verts[i].y / 2;
-		}
-
 		
 		std::vector<GLuint> ind = { 0, 2, 1, 0, 3, 1 };
 

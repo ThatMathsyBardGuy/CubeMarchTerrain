@@ -88,8 +88,6 @@ int main()
 	rendering::Shader flatshadeShader = rendering::Shader(std::string(SHADERDIR"flatshading.vert"), std::string(SHADERDIR"flatshading.frag"));
 	rendering::Shader pointquadShader = rendering::Shader(std::string(SHADERDIR"pointquad.vert"), std::string(SHADERDIR"pointquad.frag"), std::string(SHADERDIR"pointquad.geom"));
 
-	rendering::ComputeShader terrainGenShader = rendering::ComputeShader(std::string(SHADERDIR"terraingen.compute"));
-
 	rendering::Renderer nodeRenderer = rendering::Renderer(*window, &pointquadShader);
 	rendering::Renderer terrainRenderer = rendering::Renderer(*window, &flatshadeShader);
 
@@ -99,7 +97,7 @@ int main()
 	delete terrainRenderer.GetCamera();
 	terrainRenderer.SetCamera(camera);
 
-	cubemarch::CubeMarchMap cubeMarchMap(50, 30, 50);
+	cubemarch::CubeMarchMap cubeMarchMap(2, 2, 2);
 
 	std::map<int, bool> buttonStates;
 	buttonStates.insert(std::pair<int, bool>(GLFW_KEY_ESCAPE, false));
@@ -115,6 +113,8 @@ int main()
 	buttonStates.insert(std::pair<int, bool>(GLFW_KEY_RIGHT, false));
 	buttonStates.insert(std::pair<int, bool>(GLFW_KEY_EQUAL, false));
 	buttonStates.insert(std::pair<int, bool>(GLFW_KEY_MINUS, false));
+	buttonStates.insert(std::pair<int, bool>(GLFW_KEY_1, false));
+	buttonStates.insert(std::pair<int, bool>(GLFW_KEY_2, false));
 
 	float currentTime, lastTime, dt;
 	
@@ -128,13 +128,15 @@ int main()
 	float surfaceLevel = 0.5f;
 	float surfaceIncrement = 0.10f;
 
+	bool usegpu = false;
+
 	rendering::RenderObject cubeMarchRenderObject(rendering::Mesh::GenerateQuad(), glm::mat4(1.0f), "CubeMarch Visualiser"); 
 	GenerateCubeMarchNodeVisualisation(&cubeMarchMap, surfaceLevel, cubeMarchRenderObject);
 	nodeRenderer.AddObject(&cubeMarchRenderObject);
 
 	rendering::Mesh* terrainMesh = rendering::Mesh::GenerateQuad();
-	cubeMarchMap.GenerateMesh(surfaceLevel, *terrainMesh);
-	rendering::RenderObject terrainRenderObject(terrainMesh, glm::mat4(1.0f), "Terrain Visualiser");
+	rendering::RenderObject terrainRenderObject(terrainMesh);
+	cubeMarchMap.GenerateMesh(surfaceLevel, *terrainMesh, usegpu);
 	terrainRenderer.AddObject(&terrainRenderObject);
 
 	//glEnable(GL_CULL_FACE);
@@ -171,13 +173,23 @@ int main()
 		if (buttonStates.at(GLFW_KEY_LEFT)) camera->SetForward(glm::rotate(camera->GetForward(), tiltSpeed, camera->GetUp()));
 		if (buttonStates.at(GLFW_KEY_RIGHT)) camera->SetForward(glm::rotate(camera->GetForward(), -tiltSpeed, camera->GetUp()));
 
+		if (buttonStates.at(GLFW_KEY_1)) {
+			usegpu = false;
+			cubeMarchMap.GenerateMesh(surfaceLevel, *terrainMesh, usegpu);
+		}
+
+		if (buttonStates.at(GLFW_KEY_2)) {
+			usegpu = true;
+			cubeMarchMap.GenerateMesh(surfaceLevel, *terrainMesh, usegpu);
+		}
+
 		if (buttonStates.at(GLFW_KEY_EQUAL)) {
 			surfaceLevel = std::min(surfaceLevel + surfaceIncrement * dt, 1.0f);
-			cubeMarchMap.GenerateMesh(surfaceLevel, *terrainMesh);
+			cubeMarchMap.GenerateMesh(surfaceLevel, *terrainMesh, usegpu);
 		}
 		if (buttonStates.at(GLFW_KEY_MINUS)) {
 			surfaceLevel = std::max(surfaceLevel - surfaceIncrement * dt, 0.0f);
-			cubeMarchMap.GenerateMesh(surfaceLevel, *terrainMesh);
+			cubeMarchMap.GenerateMesh(surfaceLevel, *terrainMesh, usegpu);
 		}
 
 		nodeRenderer.RenderObjects();

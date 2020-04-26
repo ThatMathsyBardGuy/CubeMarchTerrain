@@ -272,6 +272,12 @@ namespace cubemarch {
 		{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
 	};
 
+	const int ENDPOINTS[12][2] = {
+		{0, 1}, {1, 2}, {2, 3}, {3, 0},
+		{4, 5}, {5, 6}, {6, 7}, {7, 4},
+		{0, 4}, {1, 5}, {2, 6}, {3, 7}
+	};
+
 	CubeMarchMap::CubeMarchMap() : CubeMarchMap(10, 10, 10) {
 		
 	}
@@ -309,87 +315,93 @@ namespace cubemarch {
 		usegpu ? GenerateMeshGPU(surfacevalue, mesh) : GenerateMeshCPU(surfacevalue, mesh);
 	}
 
+	std::vector<Point> CubeMarchMap::SolveCube(int xx, int yy, int zz, float surfacevalue) {
+		int xcoord = xx;
+		int ycoord = yy * m_XSize;
+		int zcoord = zz * m_XSize * m_YSize;
+
+		std::vector<Point> points;
+
+		int corners[8] = {
+			(xcoord)+(ycoord)+(zcoord),
+			(xcoord + 1) + (ycoord)+(zcoord),
+			(xcoord + 1) + (ycoord)+(zcoord + (m_XSize * m_YSize)),
+			(xcoord)+(ycoord)+(zcoord + (m_XSize * m_YSize)),
+
+			(xcoord)+(ycoord + m_XSize) + (zcoord),
+			(xcoord + 1) + (ycoord + m_XSize) + (zcoord),
+			(xcoord + 1) + (ycoord + m_XSize) + (zcoord + (m_XSize * m_YSize)),
+			(xcoord)+(ycoord + m_XSize) + (zcoord + (m_XSize * m_YSize))
+		};
+
+		glm::vec3 midpoints[12] = {
+			glm::vec3(xx + 0.5f, yy, zz),
+			glm::vec3(xx + 1, yy, zz + 0.5f),
+			glm::vec3(xx + 0.5f, yy, zz + 1),
+			glm::vec3(xx, yy, zz + 0.5f),
+
+			glm::vec3(xx + 0.5f, yy + 1, zz),
+			glm::vec3(xx + 1, yy + 1, zz + 0.5f),
+			glm::vec3(xx + 0.5f, yy + 1, zz + 1),
+			glm::vec3(xx, yy + 1, zz + 0.5f),
+
+			glm::vec3(xx, yy + 0.5f, zz),
+			glm::vec3(xx + 1, yy + 0.5f, zz),
+			glm::vec3(xx + 1, yy + 0.5f, zz + 1),
+			glm::vec3(xx, yy + 0.5f, zz + 1)
+		};
+
+		int cubeindex = 0;
+		for (int i = 0; i < 8; i++) {
+			if (m_Nodes[corners[i]].weight > surfacevalue) {
+				cubeindex |= (1 << i);
+			}
+		}
+
+		int* edges = CUBE_CASES[cubeindex];
+		int i = 0;
+		while (i < 16) {
+			int8_t edgeindex = edges[i];
+			if (edgeindex == -1) {
+				i = 16;
+				break;
+			}
+			CubeMarchNode* startnode = &m_Nodes[corners[ENDPOINTS[edgeindex][0]]];
+			CubeMarchNode* endnode = &m_Nodes[corners[ENDPOINTS[edgeindex][1]]];
+			glm::vec3 diff = glm::vec3(endnode->x - startnode->x, endnode->y - startnode->y, endnode->z - startnode->z);
+
+			float delta = endnode->weight - startnode->weight;
+			float startatten = (surfacevalue - startnode->weight) / delta;
+			float endatten = (surfacevalue - endnode->weight) / delta;
+
+			float atten = glm::min(startatten, 1.0f - endatten);
+
+			glm::vec3 startpoint = glm::vec3(startnode->x, startnode->y, startnode->z);
+			//glm::vec3 point = startpoint + atten * diff;
+
+			glm::vec3 point = midpoints[edgeindex];
+
+			points.emplace_back(Point({point.x, point.y, point.z}));
+			i++;
+		}
+		return points;
+	}
+
 	void CubeMarchMap::GenerateMeshCPU(float surfacevalue, rendering::Mesh& mesh) {
 		std::vector<rendering::Vertex> vertices;
 		std::vector<unsigned int> indices;
+
 		for (int xx = 0; xx < m_XSize; xx++) {
 			if ((xx + 1) % m_XSize == 0) continue;
-			int xcoord = xx;
 			for (int yy = 0; yy < m_YSize; yy++) {
 				if ((yy + 1) % m_YSize == 0) continue;
-				int ycoord = yy * m_XSize;
 				for (int zz = 0; zz < m_ZSize; zz++) {
 					if ((zz + 1) % m_ZSize == 0) continue;
-					int zcoord = zz * m_XSize * m_YSize;
-
-					int corners[8] = {
-						(xcoord)+(ycoord)+(zcoord),
-						(xcoord+1)+(ycoord)+(zcoord),
-						(xcoord+1)+(ycoord)+(zcoord + (m_XSize * m_YSize)),
-						(xcoord)+(ycoord)+(zcoord + (m_XSize * m_YSize)),
-
-						(xcoord)+(ycoord+m_XSize) + (zcoord),
-						(xcoord + 1)+(ycoord+ m_XSize) + (zcoord),
-						(xcoord + 1)+(ycoord+ m_XSize) + (zcoord+(m_XSize * m_YSize)),
-						(xcoord)+(ycoord+ m_XSize) + (zcoord+ (m_XSize * m_YSize))
-					};
-
-					glm::vec3 midpoints[12] = {
-						glm::vec3(xx + 0.5f, yy, zz),
-						glm::vec3(xx + 1, yy, zz + 0.5f),
-						glm::vec3(xx + 0.5f, yy, zz + 1),
-						glm::vec3(xx, yy, zz + 0.5f),
-
-						glm::vec3(xx + 0.5f, yy + 1, zz),
-						glm::vec3(xx + 1, yy + 1, zz + 0.5f),
-						glm::vec3(xx + 0.5f, yy + 1, zz + 1),
-						glm::vec3(xx, yy + 1, zz + 0.5f),
-
-						glm::vec3(xx, yy+0.5f, zz),
-						glm::vec3(xx + 1, yy+0.5f, zz),
-						glm::vec3(xx + 1, yy+0.5f, zz + 1),
-						glm::vec3(xx, yy+0.5f, zz + 1)
-					};
-
-					int endpoints[12][2] = {
-						{0, 1}, {1, 2}, {2, 3}, {3, 0},
-						{4, 5}, {5, 6}, {6, 7}, {7, 4},
-						{0, 4}, {1, 5}, {2, 6}, {3, 7}
-					};
-
-					int cubeindex = 0;
-					for (int i = 0; i < 8; i++) {
-						if (m_Nodes[corners[i]].weight > surfacevalue) {
-							cubeindex |= (1 << i);
-						}
-					}
-
-					int* edges = CUBE_CASES[cubeindex];
-					int i = 0;
-					while (i < 16) {
-						int8_t edgeindex = edges[i];
-						if (edgeindex == -1) {
-							i = 16;
-							break;
-						}
-						CubeMarchNode* startnode = &m_Nodes[corners[endpoints[edgeindex][0]]];
-						CubeMarchNode* endnode = &m_Nodes[corners[endpoints[edgeindex][1]]];
-						glm::vec3 diff = glm::vec3(endnode->x - startnode->x, endnode->y - startnode->y, endnode->z - startnode->z);
-
-						float delta = endnode->weight - startnode->weight;
-						float startatten = (surfacevalue - startnode->weight) / delta;
-						float endatten = (surfacevalue - endnode->weight) / delta;
-
-						float atten = glm::min(startatten, 1.0f - endatten);
-						
-						glm::vec3 startpoint = glm::vec3(startnode->x, startnode->y, startnode->z);
-						//glm::vec3 point = startpoint + atten * diff;
-
-						glm::vec3 point = midpoints[edgeindex];
-
+					///@TODO this could be optimised
+					std::vector<Point> newpoints = SolveCube(xx, yy, zz, surfacevalue);
+					for (Point& point : newpoints) {
 						indices.push_back(vertices.size());
-						vertices.push_back(rendering::Vertex({ point.x, point.y, point.z, 0, 0, 0.8, 0.2, 0.2, 1.0, 0, 0, 0 }));
-						i++;
+						vertices.emplace_back(rendering::Vertex({ point.x, point.y, point.z, 0, 0, 0.8, 0.2, 0.2, 1.0, 0, 0, 0 }));
 					}
 				}
 			}

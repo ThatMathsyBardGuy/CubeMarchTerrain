@@ -97,7 +97,7 @@ int main()
 	delete terrainRenderer.GetCamera();
 	terrainRenderer.SetCamera(camera);
 
-	cubemarch::CubeMarchMap cubeMarchMap(2, 2, 2);
+	cubemarch::CubeMarchMap cubeMarchMap(4, 4, 4);
 
 	std::map<int, bool> buttonStates;
 	buttonStates.insert(std::pair<int, bool>(GLFW_KEY_ESCAPE, false));

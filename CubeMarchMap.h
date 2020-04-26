@@ -63,6 +63,8 @@ namespace cubemarch {
 		void GenerateMeshGPU(float surfacevalue, rendering::Mesh& mesh);
 
 	protected:
+		std::vector<Point> SolveCube(int xx, int yy, int zz, float surfacevalue);
+
 		const int m_XSize;
 		const int m_YSize;
 		const int m_ZSize;

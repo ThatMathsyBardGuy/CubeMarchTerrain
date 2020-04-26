@@ -295,15 +295,7 @@ layout (std430, binding = 0) buffer SSBO {
 	Triangle SSBO_Tris[1000];
 };
 
-void main() {
-	unsigned int xx = gl_WorkGroupID.x;
-	unsigned int yy = gl_WorkGroupID.y;
-	unsigned int zz = gl_WorkGroupID.z;
-
-	unsigned int xcoord = xx;
-	unsigned int ycoord = yy * XSize;
-	unsigned int zcoord = zz * XSize * YSize;
-
+void SolveCube(int xx, int yy, int zz) {
 	const vec3 midpoints[12] = {
 		vec3(float(xx) + 0.5f, float(yy), float(zz)),					// 0
 		vec3(float(xx) + 1.0f, float(yy), float(zz) + 0.5f),			// 1
@@ -320,6 +312,18 @@ void main() {
 		vec3(float(xx) + 1.0f, float(yy)+0.5f, float(zz) + 1.0f),		// 10
 		vec3(float(xx), float(yy)+0.5f, float(zz) + 1.0f)				// 11
 	};
+}
+
+void main() {
+	unsigned int xx = gl_WorkGroupID.x;
+	unsigned int yy = gl_WorkGroupID.y;
+	unsigned int zz = gl_WorkGroupID.z;
+
+	unsigned int xcoord = xx;
+	unsigned int ycoord = yy * XSize;
+	unsigned int zcoord = zz * XSize * YSize;
+
+
 
 	unsigned int corners[8] = {
 		(xcoord)+(ycoord)+(zcoord),
@@ -348,8 +352,7 @@ void main() {
 	int i = 0;
 	int t = 0;
 
-	int currenttriindex = 0;
-	Triangle currenttris[5];
+	Triangle currenttri;
 
 	while (i < 16) {
 		int edgeindex = edges[i];
@@ -370,25 +373,16 @@ void main() {
 		//vec3 terrainPoint = startpoint + atten * diff;
 		
 		vec3 midpoint = midpoints[edgeindex];
-		currenttris[currenttriindex].points[t].x = midpoint.x;
-		currenttris[currenttriindex].points[t].y = midpoint.y;
-		currenttris[currenttriindex].points[t].z = midpoint.z;
-
-		///@DEBUG INFO REMOVE
-		if (t == 0) XSize = edgeindex;
-		if (t == 1) YSize = edgeindex;
-		if (t == 2) ZSize = edgeindex;
+		currenttri.points[t].x = midpoint.x;
+		currenttri.points[t].y = midpoint.y;
+		currenttri.points[t].z = midpoint.z;
 
 		i++;
 		t++;
 		if (t == 3) {
+			SSBO_Tris[SSBO_TriIndex] = currenttri;
+			SSBO_TriIndex ++;
 			t = 0;
-			currenttriindex++;
 		}
-	}
-
-	for (int i = 0; i < currenttriindex; i++) {
-		SSBO_Tris[SSBO_TriIndex] = currenttris[i];
-		SSBO_TriIndex ++;
 	}
 }

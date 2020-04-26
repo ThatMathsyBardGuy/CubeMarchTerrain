@@ -265,8 +265,6 @@ const int endpoints[12][2] = {
 	{0, 4}, {1, 5}, {2, 6}, {3, 7}
 };
 
-layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
-
 struct CubeMarchNode {
 	int x;
 	int y;
@@ -285,6 +283,8 @@ struct Triangle {
 	Point points[3];
 };
 
+layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+
 layout (std430, binding = 0) buffer SSBO {
 	int XSize;
 	int YSize;
@@ -294,6 +294,8 @@ layout (std430, binding = 0) buffer SSBO {
 	int SSBO_TriIndex;
 	Triangle SSBO_Tris[1000];
 };
+
+void SolveCube(int xx, int yy, int zz);
 
 void SolveCube(int xx, int yy, int zz) {
 	const vec3 midpoints[12] = {
@@ -312,19 +314,11 @@ void SolveCube(int xx, int yy, int zz) {
 		vec3(float(xx) + 1.0f, float(yy)+0.5f, float(zz) + 1.0f),		// 10
 		vec3(float(xx), float(yy)+0.5f, float(zz) + 1.0f)				// 11
 	};
-}
-
-void main() {
-	unsigned int xx = gl_WorkGroupID.x;
-	unsigned int yy = gl_WorkGroupID.y;
-	unsigned int zz = gl_WorkGroupID.z;
-
+	
 	unsigned int xcoord = xx;
 	unsigned int ycoord = yy * XSize;
 	unsigned int zcoord = zz * XSize * YSize;
-
-
-
+	
 	unsigned int corners[8] = {
 		(xcoord)+(ycoord)+(zcoord),
 		(xcoord+1)+(ycoord)+(zcoord),
@@ -383,6 +377,31 @@ void main() {
 			SSBO_Tris[SSBO_TriIndex] = currenttri;
 			SSBO_TriIndex ++;
 			t = 0;
+		}
+	}
+}
+
+void main() {
+	int startX = int(gl_GlobalInvocationID.x);
+	int startY = int(gl_GlobalInvocationID.y);
+	int startZ = int(gl_GlobalInvocationID.z);
+
+	int BatchX = int(XSize / gl_WorkGroupSize.x);
+	int BatchY = int(YSize / gl_WorkGroupSize.y);
+	int BatchZ = int(ZSize / gl_WorkGroupSize.z);
+
+	int endX = startX + BatchX;
+	int endY = startY + BatchY;
+	int endZ = startZ + BatchZ;
+
+	for (int xx = startX; xx < endX; xx++) {
+		if ((xx + 1) % XSize == 0) continue;
+		for (int yy = startY; yy < endY; yy++) {
+			if ((yy + 1) % YSize == 0) continue;
+			for (int zz = startZ; zz < endZ; zz++) {
+				if ((zz + 1) % ZSize == 0) continue;
+				SolveCube(xx, yy, zz);
+			}
 		}
 	}
 }

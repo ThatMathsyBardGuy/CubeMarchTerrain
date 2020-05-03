@@ -4,8 +4,8 @@
 
 #include "Mesh.h"
 
-#define MAX_TRIANGLES 1000
-#define MAX_NODES 100
+#define MAX_NODES 1000	// 10*10*10
+#define MAX_TRIANGLES 5000	// 10*10*10*5
 
 namespace rendering {
 	class ComputeShader;
@@ -35,10 +35,10 @@ namespace cubemarch {
 		int XSize;								
 		int YSize;								
 		int ZSize;								
-		float SurfaceValue;						
+		float SurfaceValue;			
 		CubeMarchNode Nodes[MAX_NODES];			
-		int TriIndex;							
-		Triangle Tris[MAX_TRIANGLES];		
+		Triangle Tris[MAX_TRIANGLES];
+		unsigned int TriIndex;
 	};
 
 	class CubeMarchMap {
@@ -73,6 +73,6 @@ namespace cubemarch {
 
 		rendering::ComputeShader* m_ComputeShader;
 
-	    CubeMarchSSBO m_SSBOData;
+	    CubeMarchSSBO* m_SSBOData;
 	};
 }

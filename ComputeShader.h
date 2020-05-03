@@ -25,6 +25,7 @@ namespace rendering {
 
         size_t m_DataSize;
         GLuint m_SSBO;
+        GLuint m_AtomicBuffer;
     };
 }
 

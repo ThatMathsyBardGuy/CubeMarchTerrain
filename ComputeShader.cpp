@@ -19,6 +19,11 @@ namespace rendering {
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_SSBO);
         glBufferData(GL_SHADER_STORAGE_BUFFER, m_DataSize, ssbodata, GL_DYNAMIC_COPY);
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+        glGenBuffers(1, &m_AtomicBuffer);
+        glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, m_AtomicBuffer);
+        glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint), NULL, GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
     }
 
     void ComputeShader::Dispatch(const uint32_t numgroupsx, const uint32_t numgroupsy, const uint32_t numgroupsz) {
@@ -32,6 +37,18 @@ namespace rendering {
         GLvoid* buffer = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_WRITE_ONLY);
         memcpy(buffer, data, m_DataSize);
         glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
+        ///@TODO Merge this with the SSBO using an offset in the shader
+        glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 1, m_AtomicBuffer);
+
+        glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, m_AtomicBuffer);
+        GLuint* ptr = (GLuint*)glMapBufferRange(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint),
+            GL_MAP_WRITE_BIT |
+            GL_MAP_INVALIDATE_BUFFER_BIT |
+            GL_MAP_UNSYNCHRONIZED_BIT);
+        ptr[0] = 0;
+        glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);
+        glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
+        
         //GLuint blockindex = 0;
         //blockindex = glGetProgramResourceIndex(m_Program, GL_SHADER_STORAGE_BLOCK, "SSBO");
         //glShaderStorageBlockBinding(m_Program, blockindex, 2);

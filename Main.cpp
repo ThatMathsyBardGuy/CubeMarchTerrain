@@ -10,6 +10,7 @@
 #include <iostream>
 #include <algorithm>
 #include <map>
+#include <vector>
 
 #include <gtc/matrix_transform.hpp>
 #include <gtx/rotate_vector.hpp>
@@ -61,6 +62,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 
 int main()
 {
+	std::vector<rendering::Vertex> test;
+	std::cout << test.max_size() << std::endl;
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -97,7 +100,7 @@ int main()
 	delete terrainRenderer.GetCamera();
 	terrainRenderer.SetCamera(camera);
 
-	cubemarch::CubeMarchMap cubeMarchMap(2, 2, 2);
+	cubemarch::CubeMarchMap cubeMarchMap(5, 5, 5);
 
 	std::map<int, bool> buttonStates;
 	buttonStates.insert(std::pair<int, bool>(GLFW_KEY_ESCAPE, false));
@@ -175,21 +178,33 @@ int main()
 
 		if (buttonStates.at(GLFW_KEY_1)) {
 			usegpu = false;
+			float gentimestart = glfwGetTime();
 			cubeMarchMap.GenerateMesh(surfaceLevel, *terrainMesh, usegpu);
+			float gentime = glfwGetTime() - gentimestart;
+			std::cout << "CPU: " << gentime << std::endl;
 		}
 
 		if (buttonStates.at(GLFW_KEY_2)) {
 			usegpu = true;
+			float gentimestart = glfwGetTime();
 			cubeMarchMap.GenerateMesh(surfaceLevel, *terrainMesh, usegpu);
+			float gentime = glfwGetTime() - gentimestart;
+			std::cout << "GPU: " << gentime << std::endl;
 		}
 
 		if (buttonStates.at(GLFW_KEY_EQUAL)) {
 			surfaceLevel = std::min(surfaceLevel + surfaceIncrement * dt, 1.0f);
+			float gentimestart = glfwGetTime();
 			cubeMarchMap.GenerateMesh(surfaceLevel, *terrainMesh, usegpu);
+			float gentime = glfwGetTime() - gentimestart;
+			usegpu ? std::cout << "GPU: " << gentime << std::endl : std::cout << "CPU: " << gentime << std::endl;
 		}
 		if (buttonStates.at(GLFW_KEY_MINUS)) {
 			surfaceLevel = std::max(surfaceLevel - surfaceIncrement * dt, 0.0f);
+			float gentimestart = glfwGetTime();
 			cubeMarchMap.GenerateMesh(surfaceLevel, *terrainMesh, usegpu);
+			float gentime = glfwGetTime() - gentimestart;
+			usegpu ? std::cout << "GPU: " << gentime << std::endl : std::cout << "CPU: " << gentime << std::endl;
 		}
 
 		nodeRenderer.RenderObjects();

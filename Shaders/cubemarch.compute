@@ -1,4 +1,4 @@
-#version 440
+#version 460
 
 const int CUBE_CASES[256][16] = {
 	{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
@@ -290,30 +290,32 @@ layout (std430, binding = 0) buffer SSBO {
 	int YSize;
 	int ZSize;
 	float SurfaceValue;
-	CubeMarchNode Nodes[100];
-	int SSBO_TriIndex;
-	Triangle SSBO_Tris[1000];
+	CubeMarchNode Nodes[1000];
+	Triangle SSBO_Tris[5000];
+	uint SSBO_TriIndex;
 };
+
+layout(binding = 1) uniform atomic_uint TriIndex;
 
 void SolveCube(int xx, int yy, int zz);
 
 void SolveCube(int xx, int yy, int zz) {
-	const vec3 midpoints[12] = {
-		vec3(float(xx) + 0.5f, float(yy), float(zz)),					// 0
-		vec3(float(xx) + 1.0f, float(yy), float(zz) + 0.5f),			// 1
-		vec3(float(xx) + 0.5f, float(yy), float(zz) + 1.0f),			// 2
-		vec3(float(xx), float(yy), float(zz) + 0.5f),					// 3
+	// const vec3 midpoints[12] = {
+	// 	vec3(float(xx) + 0.5f, float(yy), float(zz)),					// 0
+	// 	vec3(float(xx) + 1.0f, float(yy), float(zz) + 0.5f),			// 1
+	// 	vec3(float(xx) + 0.5f, float(yy), float(zz) + 1.0f),			// 2
+	// 	vec3(float(xx), float(yy), float(zz) + 0.5f),					// 3
 
-		vec3(float(xx) + 0.5f, float(yy) + 1.0f, float(zz)),			// 4
-		vec3(float(xx) + 1.0f, float(yy) + 1.0f, float(zz) + 0.5f),		// 5
-		vec3(float(xx) + 0.5f, float(yy) + 1.0f, float(zz) + 1.0f),		// 6
-		vec3(float(xx), float(yy) + 1.0f, float(zz) + 0.5f),			// 7
+	// 	vec3(float(xx) + 0.5f, float(yy) + 1.0f, float(zz)),			// 4
+	// 	vec3(float(xx) + 1.0f, float(yy) + 1.0f, float(zz) + 0.5f),		// 5
+	// 	vec3(float(xx) + 0.5f, float(yy) + 1.0f, float(zz) + 1.0f),		// 6
+	// 	vec3(float(xx), float(yy) + 1.0f, float(zz) + 0.5f),			// 7
 
-		vec3(float(xx), float(yy)+0.5f, float(zz)),						// 8
-		vec3(float(xx) + 1.0f, float(yy)+0.5f, float(zz)),				// 9
-		vec3(float(xx) + 1.0f, float(yy)+0.5f, float(zz) + 1.0f),		// 10
-		vec3(float(xx), float(yy)+0.5f, float(zz) + 1.0f)				// 11
-	};
+	// 	vec3(float(xx), float(yy)+0.5f, float(zz)),						// 8
+	// 	vec3(float(xx) + 1.0f, float(yy)+0.5f, float(zz)),				// 9
+	// 	vec3(float(xx) + 1.0f, float(yy)+0.5f, float(zz) + 1.0f),		// 10
+	// 	vec3(float(xx), float(yy)+0.5f, float(zz) + 1.0f)				// 11
+	// };
 	
 	unsigned int xcoord = xx;
 	unsigned int ycoord = yy * XSize;
@@ -364,18 +366,17 @@ void SolveCube(int xx, int yy, int zz) {
 		float atten = min(startatten, 1.0f - endatten);
 
 		vec3 startpoint = vec3(startnode.x, startnode.y, startnode.z);
-		//vec3 terrainPoint = startpoint + atten * diff;
-		
-		vec3 midpoint = midpoints[edgeindex];
-		currenttri.points[t].x = midpoint.x;
-		currenttri.points[t].y = midpoint.y;
-		currenttri.points[t].z = midpoint.z;
+	
+		vec3 terrainPoint = startpoint + atten * diff;
+
+		currenttri.points[t].x = terrainPoint.x;
+		currenttri.points[t].y = terrainPoint.y;
+		currenttri.points[t].z = terrainPoint.z;
 
 		i++;
 		t++;
 		if (t == 3) {
-			SSBO_Tris[SSBO_TriIndex] = currenttri;
-			SSBO_TriIndex ++;
+			SSBO_Tris[atomicCounterIncrement(TriIndex)] = currenttri;
 			t = 0;
 		}
 	}
@@ -386,9 +387,9 @@ void main() {
 	int startY = int(gl_GlobalInvocationID.y);
 	int startZ = int(gl_GlobalInvocationID.z);
 
-	int BatchX = int(XSize / gl_WorkGroupSize.x);
-	int BatchY = int(YSize / gl_WorkGroupSize.y);
-	int BatchZ = int(ZSize / gl_WorkGroupSize.z);
+	int BatchX = int(XSize / (gl_WorkGroupSize.x * gl_NumWorkGroups.x));
+	int BatchY = int(YSize / (gl_WorkGroupSize.y * gl_NumWorkGroups.y));
+	int BatchZ = int(ZSize / (gl_WorkGroupSize.z * gl_NumWorkGroups.z));
 
 	int endX = startX + BatchX;
 	int endY = startY + BatchY;
@@ -404,4 +405,5 @@ void main() {
 			}
 		}
 	}
+	SSBO_TriIndex = atomicCounter(TriIndex);
 }

@@ -294,12 +294,13 @@ namespace cubemarch {
 				}
 			}
 		}
-		m_ComputeShader = new rendering::ComputeShader(std::string(SHADERDIR"cubemarch.compute"), sizeof m_SSBOData, &m_SSBOData);
-		m_SSBOData.XSize = m_XSize;
-		m_SSBOData.YSize = m_YSize;
-		m_SSBOData.ZSize = m_ZSize;
+		m_SSBOData = new CubeMarchSSBO();
+		m_ComputeShader = new rendering::ComputeShader(std::string(SHADERDIR"cubemarch.compute"), sizeof(CubeMarchSSBO), m_SSBOData);
+		m_SSBOData->XSize = m_XSize;
+		m_SSBOData->YSize = m_YSize;
+		m_SSBOData->ZSize = m_ZSize;
 		for (int i = 0; i < glm::min(MAX_NODES, GetNumOfNodes()); i++) {
-			m_SSBOData.Nodes[i] = m_Nodes[i];
+			m_SSBOData->Nodes[i] = m_Nodes[i];
 		}
 	}
 
@@ -377,9 +378,7 @@ namespace cubemarch {
 			float atten = glm::min(startatten, 1.0f - endatten);
 
 			glm::vec3 startpoint = glm::vec3(startnode->x, startnode->y, startnode->z);
-			//glm::vec3 point = startpoint + atten * diff;
-
-			glm::vec3 point = midpoints[edgeindex];
+			glm::vec3 point = startpoint + atten * diff;
 
 			points.emplace_back(Point({point.x, point.y, point.z}));
 			i++;
@@ -411,21 +410,31 @@ namespace cubemarch {
 	}
 
 	void CubeMarchMap::GenerateMeshGPU(float surfacevalue, rendering::Mesh& mesh) {
-		m_SSBOData.TriIndex = 0;
-		m_SSBOData.SurfaceValue = surfacevalue;
-		m_ComputeShader->BufferData(&m_SSBOData);
-		m_ComputeShader->Dispatch(m_XSize - 1, m_YSize - 1, m_ZSize - 1);
-		CubeMarchSSBO outputssbo;
-		m_ComputeShader->GetData(&outputssbo);
+		m_SSBOData->TriIndex = 0;
+		m_SSBOData->SurfaceValue = surfacevalue;
+		m_ComputeShader->BufferData(m_SSBOData);
+
+		const int groupSizeX = 1;
+		const int groupSizeY = 1;
+		const int groupSizeZ = 1;
+
+		const int numGroupsX = (m_XSize - 1) / groupSizeX;
+		const int numGroupsY = (m_YSize - 1) / groupSizeY;
+		const int numGroupsZ = (m_ZSize - 1) / groupSizeZ;
+
+		m_ComputeShader->Dispatch(numGroupsX, numGroupsY, numGroupsZ);
+		//m_ComputeShader->Dispatch(1, 1, 1);
+		CubeMarchSSBO* outputssbo = new CubeMarchSSBO();
+		m_ComputeShader->GetData(outputssbo);
 
 	    std::vector<rendering::Vertex> vertices;
 		std::vector<unsigned int> indices;
-		vertices.resize(outputssbo.TriIndex * 3);
+		vertices.resize(outputssbo->TriIndex * 3);
 		///@TODO Optimise indices
 		indices.resize(vertices.size());
 		
-		for (int i = 0; i < outputssbo.TriIndex; i ++) {
-			Triangle tri = outputssbo.Tris[i];
+		for (int i = 0; i < outputssbo->TriIndex; i ++) {
+			Triangle tri = outputssbo->Tris[i];
 			vertices[i*3] = rendering::Vertex({ tri.points[0].x, tri.points[0].y, tri.points[0].z, 0, 0, 1.0f, 1.0f, 1.0f, 1.0f, 0, 0, 0 });
 			vertices[i*3+1] = rendering::Vertex({ tri.points[1].x, tri.points[1].y, tri.points[1].z, 0, 0, 1.0f, 1.0f, 1.0f, 1.0f, 0, 0, 0 });
 			vertices[i*3+2] = rendering::Vertex({ tri.points[2].x, tri.points[2].y, tri.points[2].z, 0, 0, 1.0f, 1.0f, 1.0f, 1.0f, 0, 0, 0 });

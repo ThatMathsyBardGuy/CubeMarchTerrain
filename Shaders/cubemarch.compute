@@ -290,8 +290,8 @@ layout (std430, binding = 0) buffer SSBO {
 	int YSize;
 	int ZSize;
 	float SurfaceValue;
-	CubeMarchNode Nodes[1000];
-	Triangle SSBO_Tris[5000];
+	CubeMarchNode Nodes[1000000];
+	Triangle SSBO_Tris[5000000];
 	uint SSBO_TriIndex;
 };
 

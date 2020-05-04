@@ -4,8 +4,8 @@
 
 #include "Mesh.h"
 
-#define MAX_NODES 1000	// 10*10*10
-#define MAX_TRIANGLES 5000	// 10*10*10*5
+#define MAX_NODES 1000000	// 10*10*10
+#define MAX_TRIANGLES 5000000	// 10*10*10*5
 
 namespace rendering {
 	class ComputeShader;

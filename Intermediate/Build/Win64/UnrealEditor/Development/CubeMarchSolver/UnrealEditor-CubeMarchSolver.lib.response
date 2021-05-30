@@ -1,0 +1,14 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-CubeMarchSolver.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:\Users\Ethan\Documents\UnrealProjects\CubeMarchStuff\Intermediate\Build\Win64\CubeMarchStuffEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.obj"
+"C:\Users\Ethan\Documents\UnrealProjects\CubeMarchStuff\Intermediate\Build\Win64\UnrealEditor\Development\CubeMarchSolver\CubeMarchMap.cpp.obj"
+"C:\Users\Ethan\Documents\UnrealProjects\CubeMarchStuff\Intermediate\Build\Win64\UnrealEditor\Development\CubeMarchSolver\CubeMarchSolverModule.cpp.obj"
+"C:\Users\Ethan\Documents\UnrealProjects\CubeMarchStuff\Intermediate\Build\Win64\UnrealEditor\Development\CubeMarchSolver\Default.rc2.res"
+/OUT:"C:\Users\Ethan\Documents\UnrealProjects\CubeMarchStuff\Intermediate\Build\Win64\UnrealEditor\Development\CubeMarchSolver\UnrealEditor-CubeMarchSolver.lib"
+/INCLUDE:IMPLEMENT_MODULE_CubeMarchSolver

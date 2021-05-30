@@ -1,0 +1,3 @@
+C:\Users\Ethan\Documents\UnrealProjects\CubeMarchStuff\Intermediate\Build\Win64\UnrealEditor\Development\CubeMarchStuff\Definitions.CubeMarchStuff.h
+C:\Users\Ethan\Documents\UnrealProjects\CubeMarchStuff\Source\CubeMarchStuff\Public\CubeMarchStuff.h
+C:\Users\Ethan\Documents\UnrealProjects\CubeMarchStuff\Source\CubeMarchSolver/Public/CubeMarchMap.h

@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "CubeMarchStuff",
+			"Path": "C:\\Users\\Ethan\\Documents\\UnrealProjects\\CubeMarchStuff\\Source\\CubeMarchStuff.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "CubeMarchStuffEditor",
+			"Path": "C:\\Users\\Ethan\\Documents\\UnrealProjects\\CubeMarchStuff\\Source\\CubeMarchStuffEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}

@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="..\..\CubeMarchStuff.uproject" />
+    <Filter Include="Source">
+      <UniqueIdentifier>{431134EC-7019-4481-8F59-F96AAB690E1A}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\CubeMarchStuff.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\Source\CubeMarchStuffEditor.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\GenerateProjectFiles.bat" />
+    <Filter Include="Config">
+      <UniqueIdentifier>{8E4F8B9F-FB99-423D-91F0-129DBD676DEA}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Config\DefaultEditor.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultEngine.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultGame.ini">
+      <Filter>Config</Filter>
+    </None>
+    <Filter Include="Source\CubeMarchSolver">
+      <UniqueIdentifier>{F4B79D39-9531-4183-A927-6E12653E3325}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\CubeMarchSolver\CubeMarchSolver.Build.cs">
+      <Filter>Source\CubeMarchSolver</Filter>
+    </None>
+    <Filter Include="Source\CubeMarchSolver\Private">
+      <UniqueIdentifier>{51747F1C-E60E-44A6-985D-6E4D6D52139F}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\CubeMarchSolver\Private\CubeMarchMap.cpp">
+      <Filter>Source\CubeMarchSolver\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\CubeMarchSolver\Private\CubeMarchSolverModule.cpp">
+      <Filter>Source\CubeMarchSolver\Private</Filter>
+    </ClCompile>
+    <Filter Include="Source\CubeMarchSolver\Public">
+      <UniqueIdentifier>{6EB49481-5DD9-4C7B-89DB-6B5205B52206}</UniqueIdentifier>
+    </Filter>
+    <ClInclude Include="..\..\Source\CubeMarchSolver\Public\CubeMarchMap.h">
+      <Filter>Source\CubeMarchSolver\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\CubeMarchSolver\Public\CubeMarchSolverModule.h">
+      <Filter>Source\CubeMarchSolver\Public</Filter>
+    </ClInclude>
+    <Filter Include="Source\CubeMarchStuff">
+      <UniqueIdentifier>{BB32E5CC-7404-4143-9200-A8209902D042}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\CubeMarchStuff\CubeMarchStuff.Build.cs">
+      <Filter>Source\CubeMarchStuff</Filter>
+    </None>
+    <Filter Include="Source\CubeMarchStuff\Private">
+      <UniqueIdentifier>{16B1FCC9-20A7-4501-A102-2EE6B40432D7}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\CubeMarchStuff\Private\CubeMarchStuff.cpp">
+      <Filter>Source\CubeMarchStuff\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\CubeMarchStuff\Private\CubeMarchStuffGameModeBase.cpp">
+      <Filter>Source\CubeMarchStuff\Private</Filter>
+    </ClCompile>
+    <Filter Include="Source\CubeMarchStuff\Public">
+      <UniqueIdentifier>{7FC819FF-0904-4261-9193-BA97A71BA842}</UniqueIdentifier>
+    </Filter>
+    <ClInclude Include="..\..\Source\CubeMarchStuff\Public\CubeMarchStuff.h">
+      <Filter>Source\CubeMarchStuff\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\CubeMarchStuff\Public\CubeMarchStuffGameModeBase.h">
+      <Filter>Source\CubeMarchStuff\Public</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

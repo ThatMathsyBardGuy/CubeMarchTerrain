@@ -1,0 +1,8 @@
+{
+	"BuildId": "16433597",
+	"Modules": 
+	{
+		"CubeMarchSolver": "UnrealEditor-CubeMarchSolver.dll",
+		"CubeMarchStuff": "UnrealEditor-CubeMarchStuff.dll"
+	}
+}

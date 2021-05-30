@@ -1,0 +1,1 @@
+"C:\Program Files\Epic Games\UE_5.0EA\Engine\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.exe" -ProjectFiles -UsePrecompiled -Game "C:\Users\Ethan\Documents\UnrealProjects\CubeMarchStuff\CubeMarchStuff.uproject"

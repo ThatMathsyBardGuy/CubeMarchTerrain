@@ -1,0 +1,9 @@
+{
+	"SourceFiles": [
+		"C:\\Users\\Ethan\\Documents\\UnrealProjects\\CubeMarchStuff\\Source\\CubeMarchSolver\\CubeMarchSolver.Build.cs",
+		"C:\\Users\\Ethan\\Documents\\UnrealProjects\\CubeMarchStuff\\Source\\CubeMarchStuff\\CubeMarchStuff.Build.cs",
+		"C:\\Users\\Ethan\\Documents\\UnrealProjects\\CubeMarchStuff\\Source\\CubeMarchStuff.Target.cs",
+		"C:\\Users\\Ethan\\Documents\\UnrealProjects\\CubeMarchStuff\\Source\\CubeMarchStuffEditor.Target.cs"
+	],
+	"EngineVersion": "5.0.0"
+}

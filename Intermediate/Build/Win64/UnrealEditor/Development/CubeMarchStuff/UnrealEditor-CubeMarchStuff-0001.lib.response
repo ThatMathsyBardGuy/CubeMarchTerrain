@@ -1,0 +1,16 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-CubeMarchStuff-0001.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:\Users\Ethan\Documents\Unreal Projects\CubeMarchStuff\Intermediate\Build\Win64\CubeMarchStuffEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.obj"
+"C:\Users\Ethan\Documents\Unreal Projects\CubeMarchStuff\Intermediate\Build\Win64\UnrealEditor\Development\CubeMarchStuff\CubeMarchStuff.cpp.obj"
+"C:\Users\Ethan\Documents\Unreal Projects\CubeMarchStuff\Intermediate\Build\Win64\UnrealEditor\Development\CubeMarchStuff\CubeMarchStuffGameModeBase.cpp.obj"
+"C:\Users\Ethan\Documents\Unreal Projects\CubeMarchStuff\Intermediate\Build\Win64\UnrealEditor\Development\CubeMarchStuff\CubeMarchStuff.init.gen.cpp.obj"
+"C:\Users\Ethan\Documents\Unreal Projects\CubeMarchStuff\Intermediate\Build\Win64\UnrealEditor\Development\CubeMarchStuff\CubeMarchStuffGameModeBase.gen.cpp.obj"
+"C:\Users\Ethan\Documents\Unreal Projects\CubeMarchStuff\Intermediate\Build\Win64\UnrealEditor\Development\CubeMarchStuff\Default.rc2.res"
+/OUT:"C:\Users\Ethan\Documents\Unreal Projects\CubeMarchStuff\Intermediate\Build\Win64\UnrealEditor\Development\CubeMarchStuff\UnrealEditor-CubeMarchStuff-0001.lib"
+/INCLUDE:IMPLEMENT_MODULE_CubeMarchStuff

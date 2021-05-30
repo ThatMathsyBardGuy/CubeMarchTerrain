@@ -9,6 +9,9 @@ Intermediate/
 Saved/
 *.sln
 
+#GenerateProjectFiles.bat is a bit hacky and per-user
+GenerateProjectFiles.bat
+
 # User-specific files
 *.rsuser
 *.suo

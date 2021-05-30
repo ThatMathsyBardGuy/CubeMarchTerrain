@@ -3,6 +3,12 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+## UE5 folders
+Binaries/
+Intermediate/
+Saved/
+*.sln
+
 # User-specific files
 *.rsuser
 *.suo

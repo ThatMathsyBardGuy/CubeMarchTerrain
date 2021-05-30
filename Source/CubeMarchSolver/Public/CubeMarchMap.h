@@ -9,7 +9,7 @@ struct CubeMarchNode {
 	float Weight;
 };
 
-DECLARE_DELEGATE_RetVal_OneParam(float, FOnGenerateCubeNodeWeight, FVector&);
+DECLARE_DELEGATE_RetVal_OneParam(float, FOnGenerateCubeNodeWeight, const FVector&);
 
 //@TODO ETHAN Are both these API Tags needed???
 CUBEMARCHSOLVER_API class CubeMarchMap

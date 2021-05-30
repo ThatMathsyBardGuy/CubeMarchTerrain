@@ -260,15 +260,23 @@ static int CUBE_CASES[256][16] = {
 	{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
 };
 
-CubeMarchMap::CubeMarchMap() : CubeMarchMap(10, 10, 10) {
-		
-}
+CubeMarchMap::CubeMarchMap() 
+: CubeMarchMap(10, 10, 10)
+{}
 
-CubeMarchMap::CubeMarchMap(int x, int y, int z) : XSize(x), YSize(y), ZSize(z) {
+CubeMarchMap::CubeMarchMap(int x, int y, int z)
+: XSize(x)
+, YSize(y)
+, ZSize(z)
+, SurfaceValue(0.5f)
+{
 	Nodes = TArray<CubeMarchNode>();
 	Nodes.SetNum(x * y * z);
 
-	//NoiseFunction = DefaultNoiseFunc;
+	NoiseFunction = FOnGenerateCubeNodeWeight::CreateLambda([](const FVector& InVec)
+	{
+		return FMath::RandRange(0.0f, 1.0f);
+	});
 }
 
 void CubeMarchMap::InitialiseWeights()

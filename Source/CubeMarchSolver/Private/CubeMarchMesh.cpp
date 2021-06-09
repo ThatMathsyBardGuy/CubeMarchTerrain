@@ -1,5 +1,5 @@
-#include "CubeMarchMesh.h"
-
-UCubeMarchMesh::UCubeMarchMesh(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
-{}
+//#include "CubeMarchMesh.h"
+//
+//UCubeMarchMesh::UCubeMarchMesh(const FObjectInitializer& ObjectInitializer)
+//	: Super(ObjectInitializer)
+//{}

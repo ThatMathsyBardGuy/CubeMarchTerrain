@@ -6,9 +6,3 @@
 #include "CubeMarchSolver/Public/CubeMarchMap.h"
 
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, CubeMarchStuff, "CubeMarchStuff" );
-
-int main()
-{
-    CubeMarchMap TestMap;
-    return 0;
-}

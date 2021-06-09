@@ -4,33 +4,54 @@
 #include "Math/Vector.h"
 #include "Delegates/DelegateCombinations.h"
 
+#include "CubeMarchMap.generated.h"
+
 struct CubeMarchNode {
 	FVector Coord;
 	float Weight;
 };
 
+class UObject;
+
 DECLARE_DELEGATE_RetVal_OneParam(float, FOnGenerateCubeNodeWeight, const FVector&);
 
-//@TODO ETHAN Are both these API Tags needed???
-CUBEMARCHSOLVER_API class CubeMarchMap
+//@TODO ETHAN This doesn't feel like a "component", maybe I'm wrong though
+UCLASS(ClassGroup = Nabbet, editinlinenew, meta = (BlueprintSpawnableComponent))
+class UCubeMarchMap : public UObject
 {
+	GENERATED_UCLASS_BODY()
 public:
-	CUBEMARCHSOLVER_API CubeMarchMap();
-	CubeMarchMap(int xsize, int ysize, int zsize);
-	~CubeMarchMap() {};
+	//UCubeMarchMap();
+	//UCubeMarchMap(const int xsize, const int ysize, const int zsize);
+	//~UCubeMarchMap() {};
 
-	TArray<FVector> SolveMesh();
+	//UCubeMarchMap(const FObjectInitializer& ObjectInitializer);
 
-	void InitialiseWeights();
+	UFUNCTION(BlueprintCallable) void SolveMesh();
+
+	UFUNCTION(BlueprintCallable) void InitialiseWeights();
+
+	UFUNCTION(BlueprintCallable) const TArray<FVector>& GetVertices()
+	{
+		return Vertices;
+	}
+
+	UFUNCTION(BlueprintCallable) const TArray<int>& GetTriangles()
+	{
+		return Triangles;
+	}
 
 protected:
-	const int XSize;
-	const int YSize;
-	const int ZSize;
+	UPROPERTY() int XSize;
+	UPROPERTY() int YSize;
+	UPROPERTY() int ZSize;
 
-	float SurfaceValue;
+	UPROPERTY() float SurfaceValue;
 
 	FOnGenerateCubeNodeWeight NoiseFunction;
 
 	TArray<CubeMarchNode> Nodes;
+
+	TArray<FVector> Vertices;
+	TArray<int> Triangles;	//Hate this name, but that's what ProceduralMeshComponent calls it
 };

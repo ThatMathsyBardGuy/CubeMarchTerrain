@@ -260,26 +260,30 @@ static int CUBE_CASES[256][16] = {
 	{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}
 };
 
-CubeMarchMap::CubeMarchMap() 
-: CubeMarchMap(10, 10, 10)
+//UCubeMarchMap::UCubeMarchMap() 
+//: UCubeMarchMap(10, 10, 10)
+//{}
+
+//UCubeMarchMap::UCubeMarchMap(const int x, const int y, const int z)
+//: XSize(x)
+//, YSize(y)
+//, ZSize(z)
+//, SurfaceValue(0.5f)
+//{
+//	Nodes = TArray<CubeMarchNode>();
+//	Nodes.SetNum(x * y * z);
+//
+//	NoiseFunction = FOnGenerateCubeNodeWeight::CreateLambda([](const FVector& InVec)
+//	{
+//		return FMath::RandRange(0.0f, 1.0f);
+//	});
+//}
+
+UCubeMarchMap::UCubeMarchMap(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
 {}
 
-CubeMarchMap::CubeMarchMap(int x, int y, int z)
-: XSize(x)
-, YSize(y)
-, ZSize(z)
-, SurfaceValue(0.5f)
-{
-	Nodes = TArray<CubeMarchNode>();
-	Nodes.SetNum(x * y * z);
-
-	NoiseFunction = FOnGenerateCubeNodeWeight::CreateLambda([](const FVector& InVec)
-	{
-		return FMath::RandRange(0.0f, 1.0f);
-	});
-}
-
-void CubeMarchMap::InitialiseWeights()
+void UCubeMarchMap::InitialiseWeights()
 {
 	for (CubeMarchNode& Node : Nodes)
 	{
@@ -287,9 +291,9 @@ void CubeMarchMap::InitialiseWeights()
 	}
 }
 
-TArray<FVector> CubeMarchMap::SolveMesh() {
+void UCubeMarchMap::SolveMesh() {
 
-	TArray<FVector> Vertices;
+	Vertices.Empty();
 
 	for (int xx = 0; xx < XSize; xx++) {
 		if ((xx + 1) % XSize == 0) continue;
@@ -379,5 +383,10 @@ TArray<FVector> CubeMarchMap::SolveMesh() {
 			}
 		}
 	}
-	return Vertices;
+
+	Triangles.SetNum(Vertices.Num());
+	for (int i = 0; i < Vertices.Num(); i++)
+	{
+		Triangles[i] = i;
+	}
 }

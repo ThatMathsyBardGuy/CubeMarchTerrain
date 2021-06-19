@@ -281,8 +281,56 @@ static int CUBE_CASES[256][16] = {
 
 UCubeMarchMap::UCubeMarchMap(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
-{}
+{
+	XSize = 10;
+	YSize = 10;
+	ZSize = 10;
+	SurfaceValue = 0.5f;
+	Nodes = TArray<CubeMarchNode>();
+	Nodes.SetNum(XSize * YSize * ZSize);
 
+	/*
+	* From 0 to XSize, 0, 1, ..., XSize-1
+	* From XSize to YSize, y=1, x cycles
+	* Once a square is done, do next square with zz +=1
+	*/
+
+	int i = 0;
+	for (int z = 0; z < ZSize; z++)
+	{
+		for (int y = 0; y < YSize; y++)
+		{
+			for (int x = 0; x < XSize; x++)
+			{
+				Nodes[i].Coord = FVector(x, y, z);
+				i++;
+			}
+		}
+	}
+
+	//for (int xx = 0; xx < XSize; xx++)
+	//{
+	//	if ((xx + 1) % XSize == 0) continue;
+	//	int xcoord = xx;
+	//	for (int yy = 0; yy < YSize; yy++)
+	//	{
+	//		if ((yy + 1) % YSize == 0) continue;
+	//		int ycoord = yy * XSize;
+	//		for (int zz = 0; zz < ZSize; zz++)
+	//		{
+	//			if ((zz + 1) % ZSize == 0) continue;
+	//			int zcoord = zz * XSize * YSize;
+
+	//			Nodes[xcoord + ycoord * XSize + zcoord * XSize * YSize].Coord = FVector(xcoord, ycoord, zcoord);
+	//		}
+	//	}
+	//}
+
+	NoiseFunction = FOnGenerateCubeNodeWeight::CreateLambda([](const FVector& InVec)
+	{
+		return FMath::RandRange(0.0f, 1.0f);
+	});
+}
 void UCubeMarchMap::InitialiseWeights()
 {
 	for (CubeMarchNode& Node : Nodes)

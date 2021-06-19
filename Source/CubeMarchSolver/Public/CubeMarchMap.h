@@ -16,7 +16,7 @@ class UObject;
 DECLARE_DELEGATE_RetVal_OneParam(float, FOnGenerateCubeNodeWeight, const FVector&);
 
 //@TODO ETHAN This doesn't feel like a "component", maybe I'm wrong though
-UCLASS(ClassGroup = Nabbet, editinlinenew, meta = (BlueprintSpawnableComponent))
+UCLASS(BlueprintType)
 class UCubeMarchMap : public UObject
 {
 	GENERATED_UCLASS_BODY()
